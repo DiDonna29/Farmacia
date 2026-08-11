@@ -1,0 +1,31 @@
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.bg-200 {
+  background-color: #f1f4f8 !important;
+  cursor: not-allowed;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.cursor-pointer:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-control:focus {
+  border-color: #3874ff;
+  box-shadow: 0 0 0 0.2rem rgba(56, 116, 255, 0.25);
+}
+
+.fs--1 {
+  font-size: 0.85rem;
+}
+.fw-bolder {
+  font-weight: 800;
+}

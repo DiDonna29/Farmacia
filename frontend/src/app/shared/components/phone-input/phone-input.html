@@ -1,0 +1,21 @@
+<div class="input-group">
+  <select class="form-select {{ inputClass }}" style="max-width: 110px;" [(ngModel)]="prefix" (ngModelChange)="emitChange()" [disabled]="disabled">
+    <option value="">Cód.</option>
+    <option value="0414">0414</option>
+    <option value="0424">0424</option>
+    <option value="0412">0412</option>
+    <option value="0422">0422</option>
+    <option value="0416">0416</option>
+    <option value="0426">0426</option>
+  </select>
+  <input 
+    type="text" 
+    class="form-control {{ inputClass }}" 
+    placeholder="1234567" 
+    [value]="number" 
+    (input)="onInput($event)" 
+    (blur)="onBlur()"
+    maxlength="7" 
+    [disabled]="disabled"
+  />
+</div>

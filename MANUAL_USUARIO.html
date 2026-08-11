@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Normas y Procedimientos - SIFARMA DEM</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --primary-blue: #1e3a8a;
+            --secondary-blue: #3b82f6;
+            --dark-gray: #334155;
+            --light-gray: #f8fafc;
+            --border-color: #cbd5e1;
+            --text-color: #0f172a;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-color);
+            background-color: #e2e8f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .document-container {
+            background-color: #ffffff;
+            width: 800px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Portada */
+        .cover-page {
+            text-align: center;
+            height: 900px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            page-break-after: always;
+            padding: 40px 0;
+        }
+
+        .cover-header-banner {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            padding: 15px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .cover-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin: auto 0;
+            line-height: 1.4;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .cover-footer {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            font-weight: 600;
+        }
+
+        .cover-footer-bar {
+            height: 15px;
+            background: linear-gradient(to right, #ff4500, #32cd32, #4b0082, #0000ff);
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+
+        /* Encabezado de Página Tipo DEM */
+        .dem-header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 0.75rem;
+        }
+
+        .dem-header-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: 600;
+        }
+
+        .dem-header-logo-cell {
+            width: 25%;
+            font-size: 0.65rem;
+        }
+
+        .dem-header-title-cell {
+            width: 55%;
+            font-size: 0.85rem;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+        }
+
+        .dem-header-page-cell {
+            width: 20%;
+        }
+
+        /* Secciones del Documento */
+        h2.section-title {
+            color: var(--primary-blue);
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 5px;
+            margin-top: 40px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        p {
+            line-height: 1.6;
+            font-size: 0.95rem;
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        /* Estilo de Tablas de Procedimiento */
+        table.procedimientos-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        table.procedimientos-table th, table.procedimientos-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: left;
+        }
+
+        table.procedimientos-table th {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        table.procedimientos-table tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+
+        .text-center {
+            text-align: center !important;
+        }
+
+        .fw-bold {
+            font-weight: 600;
+        }
+
+        /* Glosario */
+        .glosario-term {
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .glosario-item {
+            margin-bottom: 15px;
+        }
+
+        /* Saltos de página para impresión */
+        .page-break {
+            page-break-before: always;
+            border-top: 1px dashed var(--border-color);
+            margin-top: 40px;
+            padding-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="document-container">
+
+    <!-- PORTADA -->
+    <div class="cover-page">
+        <div class="cover-header-banner">
+            República Bolivariana de Venezuela<br>
+            Tribunal Supremo de Justicia<br>
+            Dirección Ejecutiva de la Magistratura
+        </div>
+        
+        <div class="cover-title">
+            Manual de Normas y Procedimientos<br>
+            del Sistema de Inventario de Salud y<br>
+            Abastecimiento al Personal (SIFARMA)
+        </div>
+
+        <div class="cover-footer">
+            CARACAS, JULIO 2026
+            <div class="cover-footer-bar"></div>
+            Dirección General de Planificación y Desarrollo Institucional
+        </div>
+    </div>
+
+    <!-- PÁGINA 1 -->
+    <div class="page-content">
+        <table class="dem-header-table">
+            <tr>
+                <td class="dem-header-logo-cell">
+                    DIRECCIÓN EJECUTIVA<br>DE LA MAGISTRATURA<br>
+                    <span style="font-size: 0.55rem; opacity: 0.8;">PLANIFICACIÓN Y DESARROLLO</span>
+                </td>
+                <td class="dem-header-title-cell">
+                    Manual de Normas y Procedimientos - SIFARMA DEM
+                </td>
+                <td class="dem-header-page-cell">
+                    N° de Página: 1<br>
+                    Fecha: 27/07/2026
+                </td>
+            </tr>
+        </table>
+
+        <h2 class="section-title">I. INTRODUCCIÓN</h2>
+        <p>
+            El presente Manual de Normas y Procedimientos del <strong>Sistema de Inventario de Farmacia (SIFARMA)</strong> ha sido elaborado por la <strong>Oficina de Desarrollo Informático</strong> en coordinación con la <strong>Oficina de Servicio Médico</strong> de la Dirección Ejecutiva de la Magistratura (DEM). Este documento constituye una herramienta de control, organización y metodología de cumplimiento obligatorio para todo el personal adscrito que interactúa con la plataforma.
+        </p>
+        <p>
+            Su finalidad es regular, normalizar y unificar los procesos administrativos y tecnológicos que comprenden el registro de insumos, el control de stock mediante semaforización, las solicitudes interdepartamentales y la dispensación de insumos médicos al personal de la Dirección Ejecutiva de la Magistratura (DEM) y sus cargas familiares.
+        </p>
+
+        <h2 class="section-title">II. OBJETIVO</h2>
+        <p>
+            Establecer las normas, responsabilidades e instructivos secuenciales de los procedimientos que regulan el funcionamiento del <strong>SIFARMA</strong>, garantizando la disponibilidad, integridad y confidencialidad de la información del almacén de salud, la trazabilidad de los despachos a beneficiarios institucionales y la transparencia en las operaciones de dotación.
+        </p>
+
+        <h2 class="section-title">III. BASE LEGAL</h2>
+        <p>
+            El funcionamiento y resguardo de la información en el SIFARMA se fundamenta en el marco legal vigente de la República Bolivariana de Venezuela:
+        </p>
+        <ul>
+            <li><strong>Constitución de la República Bolivariana de Venezuela</strong>: Gaceta Oficial N° 5.453 Extraordinario del 24/03/2000.</li>
+            <li><strong>Ley Especial Contra los Delitos Informáticos</strong>: Gaceta Oficial N° 37.313 del 30/10/2001.</li>
+            <li><strong>Ley Sobre Mensajes de Datos y Firmas Electrónicas</strong>: Gaceta Oficial N° 37.148 del 28/02/2001.</li>
+            <li><strong>Ley Orgánica de la Administración Pública</strong>: Gaceta Oficial N° 5.890 Extraordinario del 31/07/2008.</li>
+            <li><strong>Ley Orgánica de la Contraloría General de la República y del Sistema Nacional de Control Fiscal</strong>: Gaceta Oficial Extraordinaria N° 6.013 del 23/12/2010.</li>
+            <li><strong>Normas Generales de Control Interno</strong>: Gaceta Oficial N° 36.229 del 17/06/1997.</li>
+        </ul>
+    </div>
+
+    <!-- PÁGINA 2 -->
+    <div class="page-break">
+        <table class="dem-header-table">
+            <tr>
+                <td class="dem-header-logo-cell">
+                    DIRECCIÓN EJECUTIVA<br>DE LA MAGISTRATURA<br>
+                    <span style="font-size: 0.55rem; opacity: 0.8;">PLANIFICACIÓN Y DESARROLLO</span>
+                </td>
+                <td class="dem-header-title-cell">
+                    Manual de Normas y Procedimientos - SIFARMA DEM
+                </td>
+                <td class="dem-header-page-cell">
+                    N° de Página: 2<br>
+                    Fecha: 27/07/2026
+                </td>
+            </tr>
+        </table>
+
+        <h2 class="section-title">IV. NORMAS GENERALES Y DE SEGURIDAD</h2>
+        <h3 style="color: var(--primary-blue); font-size: 1rem; margin-top:20px;">De los Módulos Compartidos e Interacción de Roles</h3>
+        <p>
+            1. El SIFARMA es una aplicación multiusuario estructurada bajo el control de acceso basado en roles (RBAC).
+        </p>
+        <p>
+            2. <strong>Uso Compartido de Módulos:</strong> Múltiples perfiles de usuario acceden y comparten los mismos módulos del sistema, restringiendo sus acciones dinámicamente según su nivel de competencia:
+        </p>
+        <ul>
+            <li><strong>Módulo de Inventario:</strong> Compartido por el <em>Farmacéutico</em> (control minorista y dispensación del dispensario), el <em>Operativo de Proveeduría</em> (gestión mayorista del almacén a granel), y el <em>Encargado</em> (quien posee privilegios cruzados de supervisión y gestión operativa en ambos inventarios). Aunque acceden a la misma interfaz, las acciones de dotación manual y traslado están limitadas a su respectiva competencia. El <em>Auditor</em> y el <em>Director</em> acceden a este módulo en modalidad exclusiva de <strong>Sólo Lectura</strong>.</li>
+            <li><strong>Módulo de Solicitudes y Requisiciones:</strong> Compartido en tiempo real e interdepartamentalmente entre <em>Farmacia</em>, <em>Proveeduría</em> y el <em>Encargado</em> (quien tiene la facultad de revisar y tramitar requisiciones en ambos sentidos). El flujo de aprobaciones y motivo de rechazos se comunica automáticamente mediante transiciones de estados en pantalla.</li>
+            <li><strong>Módulo de Bitácora (Logs de Eventos):</strong> Compartido por el <em>Administrador</em> (gestión de seguridad y usuarios), el <em>Director</em> (seguimiento gerencial) y el <em>Auditor</em> (control fiscal de inhabilitaciones de lotes dañados).</li>
+        </ul>
+        <h3 style="color: var(--primary-blue); font-size: 1rem; margin-top:20px;">De la Seguridad Lógica de Cuentas y Control de Accesos</h3>
+        <p>
+            3. Las cuentas de usuario son de uso personal e intransferible. El registro y la modificación de usuarios de Farmacia y Proveeduría está disponible para el <em>Administrador</em> y el <em>Encargado</em> según su jerarquía de control.
+        </p>
+        <p>
+            4. Las contraseñas deben poseer una longitud mínima de ocho (8) caracteres, combinando letras mayúsculas, minúsculas, números y símbolos especiales.
+        </p>
+        <p>
+            5. De ocurrir <strong>cinco (5) intentos fallidos de autenticación</strong>, la clave de usuario será bloqueada preventivamente y la cuenta será desactivada.
+        </p>
+        <p>
+            6. Las contraseñas de acceso deben ser actualizadas forzosamente por los usuarios en un lapso no mayor a noventa (90) días.
+        </p>
+    </div>
+
+    <!-- PÁGINA 3 -->
+    <div class="page-break">
+        <table class="dem-header-table">
+            <tr>
+                <td class="dem-header-logo-cell">
+                    DIRECCIÓN EJECUTIVA<br>DE LA MAGISTRATURA<br>
+                    <span style="font-size: 0.55rem; opacity: 0.8;">PLANIFICACIÓN Y DESARROLLO</span>
+                </td>
+                <td class="dem-header-title-cell">
+                    Manual de Normas y Procedimientos - SIFARMA DEM
+                </td>
+                <td class="dem-header-page-cell">
+                    N° de Página: 3<br>
+                    Fecha: 27/07/2026
+                </td>
+            </tr>
+        </table>
+
+        <h2 class="section-title">V. PROCEDIMIENTOS DETALLADOS</h2>
+        
+        <h3 style="color: var(--primary-blue); font-size: 1rem; margin-top:20px;">5.1. Procedimiento para el Inicio de Sesión y Recuperación de Credenciales</h3>
+        <p><strong>Objetivo:</strong> Describir los pasos para la autenticación y reestablecimiento seguro de credenciales en el sistema.</p>
+        
+        <table class="procedimientos-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%">Responsable</th>
+                    <th style="width: 10%" class="text-center">Paso</th>
+                    <th style="width: 65%">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">Cualquier Funcionario</td>
+                    <td class="text-center">1</td>
+                    <td>Ingresa a la interfaz de acceso <code>http://SIFARMA.dem.int/login</code>, escribe su Cédula (ej: <code>11456789</code>) y contraseña, y pulsa "Iniciar Sesión".</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Sistema (Backend)</td>
+                    <td class="text-center">2</td>
+                    <td>Evalúa la autenticidad del token JWT. Si es válido, redirige al Dashboard y habilita el menú según el Rol. Si detecta 5 fallos, desactiva la cuenta.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Funcionario</td>
+                    <td class="text-center">3</td>
+                    <td>Hace clic en "¿Olvidó su contraseña?", introduce su cédula y correo institucional y hace clic en "Enviar".</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Sistema</td>
+                    <td class="text-center">4</td>
+                    <td>Valida la coincidencia y remite un token seguro temporal al correo institucional para forzar el cambio de clave.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="color: var(--primary-blue); font-size: 1rem; margin-top:30px;">5.2. Procedimiento para la Creación y Gestión de Usuarios (CRUD)</h3>
+        <p><strong>Objetivo:</strong> Registrar y parametrizar las cuentas de acceso del personal de salud en la plataforma.</p>
+
+        <table class="procedimientos-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%">Responsable</th>
+                    <th style="width: 10%" class="text-center">Paso</th>
+                    <th style="width: 65%">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">Administrador</td>
+                    <td class="text-center">1</td>
+                    <td>Se dirige a <strong>Mantenimiento > Usuarios</strong> en el menú de navegación y pulsa <strong>"Nuevo Usuario"</strong>.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Administrador</td>
+                    <td class="text-center">2</td>
+                    <td>Digita la cédula de identidad del funcionario en el campo de consulta del WebService y hace clic en buscar.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Sistema</td>
+                    <td class="text-center">3</td>
+                    <td>Realiza una petición interna al servidor de Recursos Humanos, recupera el nombre y apellido completos del trabajador y bloquea dichos campos en formato de sólo lectura.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Administrador</td>
+                    <td class="text-center">4</td>
+                    <td>Configura el correo electrónico del usuario, le asigna el <strong>Rol</strong> operativo y hace clic en <strong>"Guardar"</strong>.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PÁGINA 4 -->
+    <div class="page-break">
+        <table class="dem-header-table">
+            <tr>
+                <td class="dem-header-logo-cell">
+                    DIRECCIÓN EJECUTIVA<br>DE LA MAGISTRATURA<br>
+                    <span style="font-size: 0.55rem; opacity: 0.8;">PLANIFICACIÓN Y DESARROLLO</span>
+                </td>
+                <td class="dem-header-title-cell">
+                    Manual de Normas y Procedimientos - SIFARMA DEM
+                </td>
+                <td class="dem-header-page-cell">
+                    N° de Página: 4<br>
+                    Fecha: 27/07/2026
+                </td>
+            </tr>
+        </table>
+
+        <h3 style="color: var(--primary-blue); font-size: 1rem;">5.3. Procedimiento para la Creación y Registro de Medicamentos en el Catálogo</h3>
+        <p><strong>Objetivo:</strong> Mantener actualizado el catálogo nacional de medicamentos e insumos médicos base.</p>
+
+        <table class="procedimientos-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%">Responsable</th>
+                    <th style="width: 10%" class="text-center">Paso</th>
+                    <th style="width: 65%">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">Administrador</td>
+                    <td class="text-center">1</td>
+                    <td>Accede a <strong>Mantenimiento > Catálogo</strong> en la barra lateral y hace clic en <strong>"Agregar Insumo"</strong>.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Administrador</td>
+                    <td class="text-center">2</td>
+                    <td>Escribe el Nombre Genérico del insumo. El sistema valida duplicidades en segundo plano.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Sistema</td>
+                    <td class="text-center">3</td>
+                    <td>Responde e interrumpe según la coincidencia:<br>- <strong>Coincidencia Exacta:</strong> Muestra advertencia e impide el registro.<br>- <strong>Coincidencia Parcial:</strong> Abre modal de variantes para guiar la selección del registro idóneo.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Administrador</td>
+                    <td class="text-center">4</td>
+                    <td>Selecciona los parámetros del componente. Si la unidad de medida no se encuentra listada, elige la opción <strong>"OTRO"</strong> e introduce la descripción de texto. El sistema asienta el nuevo registro en la base de datos automáticamente.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="color: var(--primary-blue); font-size: 1rem; margin-top:30px;">5.4. Procedimiento para la Carga Masiva de Lotes de Medicamento (Excel)</h3>
+        <p><strong>Objetivo:</strong> Incorporar múltiples lotes de insumos de forma rápida mediante formato estandarizado.</p>
+
+        <table class="procedimientos-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%">Responsable</th>
+                    <th style="width: 10%" class="text-center">Paso</th>
+                    <th style="width: 65%">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">Farmacéutico / Operativo</td>
+                    <td class="text-center">1</td>
+                    <td>Se dirige a <strong>Mantenimiento > Carga Masiva</strong> en el menú lateral y hace clic en <strong>"Descargar Formato Excel"</strong>.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Farmacéutico / Operativo</td>
+                    <td class="text-center">2</td>
+                    <td>Rellena la hoja de cálculo respetando el límite máximo de <strong>20.000 unidades</strong> por fila.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Farmacéutico / Operativo</td>
+                    <td class="text-center">3</td>
+                    <td>Sube el archivo <code>.xlsx</code> en la zona de importación de la interfaz.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Sistema</td>
+                    <td class="text-center">4</td>
+                    <td>Analiza fila por fila. Si detecta discrepancias de nombres o presentaciones con el Catálogo, rechaza el archivo y detalla los errores recomendando variantes válidas.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Farmacéutico / Operativo</td>
+                    <td class="text-center">5</td>
+                    <td>Si la previsualización no reporta errores, presiona <strong>"Confirmar Carga"</strong> para asentar los lotes en el inventario.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PÁGINA 5 -->
+    <div class="page-break">
+        <table class="dem-header-table">
+            <tr>
+                <td class="dem-header-logo-cell">
+                    DIRECCIÓN EJECUTIVA<br>DE LA MAGISTRATURA<br>
+                    <span style="font-size: 0.55rem; opacity: 0.8;">PLANIFICACIÓN Y DESARROLLO</span>
+                </td>
+                <td class="dem-header-title-cell">
+                    Manual de Normas y Procedimientos - SIFARMA DEM
+                </td>
+                <td class="dem-header-page-cell">
+                    N° de Página: 5<br>
+                    Fecha: 27/07/2026
+                </td>
+            </tr>
+        </table>
+
+        <h3 style="color: var(--primary-blue); font-size: 1rem;">5.5. Procedimiento para el Despacho y Entrega de Medicamentos a Pacientes</h3>
+        <p><strong>Objetivo:</strong> Atender solicitudes médicas de los trabajadores de la institución y sus cargas familiares.</p>
+
+        <table class="procedimientos-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%">Responsable</th>
+                    <th style="width: 10%" class="text-center">Paso</th>
+                    <th style="width: 65%">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">Farmacéutico</td>
+                    <td class="text-center">1</td>
+                    <td>Abre el módulo <strong>Despachos > Nuevo Despacho</strong> e ingresa la cédula del beneficiario titular (ej: <code>11456789</code>).</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Sistema</td>
+                    <td class="text-center">2</td>
+                    <td>Valida la cédula de forma directa con el servicio de Bienestar Social (bypasseando el proxy de red local) e importa los datos del empleado y su lista de familiares.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Farmacéutico</td>
+                    <td class="text-center">3</td>
+                    <td>Selecciona si el medicamento es para el <strong>Titular</strong> o para una <strong>Carga Familiar</strong> específica en el menú desplegable.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Farmacéutico</td>
+                    <td class="text-center">4</td>
+                    <td>Agrega los medicamentos al carrito, define las cantidades indicadas (máximo 20.000 unidades) y asocia los lotes (los lotes marcados en rojo/Vencidos se encuentran bloqueados).</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Farmacéutico</td>
+                    <td class="text-center">5</td>
+                    <td>Presiona <strong>"Procesar Despacho"</strong>. El sistema descuenta el stock en tiempo real y genera el acta.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Farmacéutico</td>
+                    <td class="text-center">6</td>
+                    <td>Descarga e imprime el <strong>Comprobante de Despacho (Acta PDF)</strong> firmado, que incorpora logotipos en Base64 para resguardo físico de la farmacia.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="color: var(--primary-blue); font-size: 1rem; margin-top:30px;">5.6. Procedimiento para la Tramitación de Solicitudes y Requisiciones de Almacén</h3>
+        <p><strong>Objetivo:</strong> Reabastecer stock de farmacia o autorizar salidas de material a dependencias externas.</p>
+
+        <table class="procedimientos-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%">Responsable</th>
+                    <th style="width: 10%" class="text-center">Paso</th>
+                    <th style="width: 65%">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">Farmacéutico (Solicitante)</td>
+                    <td class="text-center">1</td>
+                    <td>Accede a <strong>Solicitudes > Crear Solicitud</strong>, define Origen: <code>FARMACIA</code>, Destino: <code>PROVEEDURIA</code>, añade los insumos requeridos (máximo 20.000 unidades) y presiona <strong>"Enviar"</strong>.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Operativo de Proveeduría</td>
+                    <td class="text-center">2</td>
+                    <td>Abre el módulo de <strong>Solicitudes y Requisiciones</strong> y localiza la orden. *(Opcional: presiona el botón rápido "Otros" para aislar y tramitar solicitudes externas de entes externos como TEPUY).*</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Operativo de Proveeduría</td>
+                    <td class="text-center">3</td>
+                    <td>Hace clic en <strong>"Procesar"</strong> y evalúa la orden:<br>- <strong>Aprobar:</strong> Selecciona el lote mayorista de salida y pulsa <strong>"Entregar Solicitud"</strong>. El stock migra a la farmacia automáticamente.<br>- <strong>Rechazar:</strong> Presiona <strong>"Rechazar"</strong>, ingresa el <strong>Motivo de Rechazo</strong> en el modal y pulsa <strong>"Confirmar"</strong>.</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Sistema</td>
+                    <td class="text-center">4</td>
+                    <td>Registra el motivo de rechazo en la base de datos concatenado a las observaciones y actualiza el acta PDF inyectando una tarjeta visual con el justificativo del rechazo.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PÁGINA 6 -->
+    <div class="page-break">
+        <table class="dem-header-table">
+            <tr>
+                <td class="dem-header-logo-cell">
+                    DIRECCIÓN EJECUTIVA<br>DE LA MAGISTRATURA<br>
+                    <span style="font-size: 0.55rem; opacity: 0.8;">PLANIFICACIÓN Y DESARROLLO</span>
+                </td>
+                <td class="dem-header-title-cell">
+                    Manual de Normas y Procedimientos - SIFARMA DEM
+                </td>
+                <td class="dem-header-page-cell">
+                    N° de Página: 6<br>
+                    Fecha: 27/07/2026
+                </td>
+            </tr>
+        </table>
+
+        <h2 class="section-title">VI. FORMULARIOS E INSTRUCTIVOS DEL SISTEMA</h2>
+        <p>
+            Los reportes y actas generados por el SIFARMA constituyen documentos institucionales formales:
+        </p>
+        <p>
+            1. <strong>Comprobante de Despacho al Personal (Acta PDF):</strong> Emitida automáticamente por el sistema al procesar una entrega. Renderiza el logotipo de la DEM a la izquierda y el de SIFARMA a la derecha de forma segura utilizando Base64 directamente desde la memoria del servidor. Contiene firmas digitales de los responsables y el desglose de medicamentos retirados.
+        </p>
+        <p>
+            2. <strong>Acta de Solicitud de Reabastecimiento de Insumos:</strong> Documento formal que certifica la dotación interna o el rechazo justificado de un pedido de Farmacia a Proveeduría.
+        </p>
+
+        <h2 class="section-title">VII. DEFINICIÓN DE TÉRMINOS</h2>
+        
+        <div class="glosario-item">
+            <span class="glosario-term">Administrador:</span> Funcionario del área informática con privilegios absolutos para configurar seguridad, registrar cuentas de usuario y mantener el catálogo maestro.
+        </div>
+        <div class="glosario-item">
+            <span class="glosario-term">Auditor:</span> Funcionario encargado de velar por el control fiscal de la farmacia analizando los registros del almacén y la bitácora en modo de sólo lectura.
+        </div>
+        <div class="glosario-item">
+            <span class="glosario-term">Bypass de Proxy:</span> Configuración técnica a nivel de código (<code>proxies={"http": None, "https": None}</code>) para forzar que el sistema consulte los servicios de red locales eludiendo el servidor proxy Squid de la red.
+        </div>
+        <div class="glosario-item">
+            <span class="glosario-term">Director:</span> Funcionario con rol de supervisión médica que evalúa gráficas de consumo de medicamentos y reportes de existencias.
+        </div>
+        <div class="glosario-item">
+            <span class="glosario-term">Encargado:</span> Funcionario con perfil de supervisión interdepartamental que posee privilegios combinados para gestionar operativamente el catálogo, realizar dotaciones y autorizar/despachar solicitudes tanto de la Farmacia Central como del almacén de Proveeduría, además de poseer control sobre la inhabilitación y activación de cuentas de usuario de ambos departamentos.
+        </div>
+        <div class="glosario-item">
+            <span class="glosario-term">Semaforización:</span> Clasificación visual y lógica de los lotes de medicamento según su fecha de vencimiento: Verde (Vigente), Amarillo (Próximo a vencer) y Rojo (Vencido e inhabilitado).
+        </div>
+        <div class="glosario-item">
+            <span class="glosario-term">SimpleJWT:</span> Estándar de seguridad para la autenticación y encriptación de datos de sesión.
+        </div>
+        <div class="glosario-item">
+            <span class="glosario-term">WebService:</span> Servicio web institucional que permite la consulta y validación inmediata de cédulas de identidad con las bases de datos de Recursos Humanos.
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,116 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm",
+    "analytics": false
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "farmacia": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/farmacia",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "public",
+                "output": "/public"
+              }
+            ],
+            "styles": [
+              "src/styles.css",
+              "src/assets/vendors/simplebar/simplebar.min.css",
+              "src/assets/css/theme.min.css",
+              "src/assets/css/user.min.css",
+              "src/assets/vendors/dropzone/dropzone.min.css",
+              "src/assets/vendors/sweetalert2/sweetalert2.min.css",
+              "src/assets/vendors/datatables/dataTables.dataTables.css",
+              "src/assets/vendors/driver_start/drive.css",
+              "src/assets/vendors/flatpickr/flatpickr.min.css"
+            ],
+            "scripts": [
+              "src/assets/js/jquery-3.7.1.js",
+              "src/assets/vendors/popper/popper.min.js",
+              "src/assets/vendors/bootstrap/bootstrap.min.js",
+              "src/assets/vendors/lodash/lodash.min.js",
+              "src/assets/vendors/simplebar/simplebar.min.js",
+              "src/assets/vendors/imagesloaded/imagesloaded.pkgd.min.js",
+              "src/assets/js/config.js",
+              "src/assets/vendors/anchorjs/anchor.min.js",
+              "src/assets/vendors/is/is.min.js",
+              "src/assets/vendors/fontawesome/all.min.js",
+              "src/assets/vendors/feather-icons/feather.min.js",
+              "src/assets/vendors/dayjs/dayjs.min.js",
+              "src/assets/vendors/datatables/dataTables.js",
+              "src/assets/vendors/list.js/list.min.js",
+              "src/assets/vendors/echarts/echarts.min.js",
+              "src/assets/vendors/dropzone/dropzone.min.js",
+              "src/assets/vendors/flatpickr/flatpickr.min.js",
+              "src/assets/vendors/sweetalert2/sweetalert2.all.min.js",
+              "src/assets/js/phoenix.js",
+              "src/assets/js/scripts.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "pg",
+              "sweetalert2"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "10MB",
+                  "maximumError": "15MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "farmacia:build:production"
+            },
+            "development": {
+              "buildTarget": "farmacia:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    }
+  }
+}

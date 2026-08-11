@@ -1,0 +1,20 @@
+<nav class="navbar navbar-vertical navbar-expand-lg">
+  <div class="collapse navbar-collapse" id="navbarVerticalCollapse">
+    <div class="navbar-vertical-content">
+      <ul class="navbar-nav flex-column" id="navbarVerticalNav">
+        
+        <li class="nav-item" *ngFor="let item of filteredMenu">
+          <a class="nav-link" [routerLink]="item.route" routerLinkActive="active">
+            <div class="d-flex align-items-center">
+              <span class="nav-link-icon">
+                <span [class]="item.icon"></span>
+              </span>
+              <span class="nav-link-text">{{ item.label }}</span>
+            </div>
+          </a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>

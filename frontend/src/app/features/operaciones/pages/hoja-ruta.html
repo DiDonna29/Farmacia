@@ -1,0 +1,256 @@
+<div class="row g-3 mb-4">
+  <div class="col-12">
+    <div class="card shadow-none border border-300">
+      <div class="card-header border-bottom border-300 bg-light py-3">
+        <h5 class="mb-0 text-primary-emphasis fw-bolder text-uppercase">
+          <i class="fas fa-bolt me-2"></i>Acceso Rápido
+        </h5>
+        <span class="fs--1 text-600">Registro simplificado de solicitudes sin búsqueda previa en base de datos.</span>
+      </div>
+      <div class="card-body bg-body-tertiary">
+        <div class="row gx-4 gy-4">
+          <!-- Tarjeta APS -->
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm custom-hover-card" (click)="abrirModal('solicitud-tipo1')" data-bs-toggle="modal" data-bs-target="#modalAps">
+              <div class="card-body text-center py-5 cursor-pointer">
+                <div class="icon-circle bg-warning-subtle text-warning mx-auto mb-3" style="width: 80px; height: 80px; line-height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-file-alt fs-3"></i>
+                </div>
+                <h5 class="fw-bolder">Solicitud Tipo 1</h5>
+                <p class="fs--1 text-600 mb-0">Emisión directa de Tipo 1</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjeta Carta Aval -->
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm custom-hover-card" (click)="abrirModal('solicitud-tipo2')" data-bs-toggle="modal" data-bs-target="#modalAval">
+              <div class="card-body text-center py-5 cursor-pointer">
+                <div class="icon-circle bg-primary-subtle text-primary mx-auto mb-3" style="width: 80px; height: 80px; line-height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-clipboard-list fs-3"></i>
+                </div>
+                <h5 class="fw-bolder">Solicitud Tipo 2</h5>
+                <p class="fs--1 text-600 mb-0">Generar solicitud de Tipo 2</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjeta Reembolso -->
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm custom-hover-card" (click)="abrirModal('solicitud-tipo3')" data-bs-toggle="modal" data-bs-target="#modalReembolso">
+              <div class="card-body text-center py-5 cursor-pointer">
+                <div class="icon-circle bg-success-subtle text-success mx-auto mb-3" style="width: 80px; height: 80px; line-height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-money-bill-wave fs-3"></i>
+                </div>
+                <h5 class="fw-bolder">Solicitud Tipo 3</h5>
+                <p class="fs--1 text-600 mb-0">Registrar solicitud de Tipo 3</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Estilos integrados para las cards -->
+<style>
+  .custom-hover-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .custom-hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    border: 1px solid var(--falcon-primary) !important;
+  }
+</style>
+
+<!-- ============================================== -->
+<!-- MODAL APS -->
+<!-- ============================================== -->
+<div class="modal fade" id="modalAps" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title fw-bold text-white"><i class="fas fa-file-alt me-2"></i>Generar Trámite de Tipo 1</h5>
+        <button type="button" class="btn-close btn-close-white btn-close-modal" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div class="row g-3">
+          <div class="col-12"><h6 class="text-uppercase fw-bolder border-bottom pb-2">1. Datos Personales</h6></div>
+          
+          <div class="col-md-8">
+            <label class="form-label fs--1 fw-bold mb-1">TITULAR</label>
+            <input class="form-control" [(ngModel)]="pacienteData.titular" placeholder="V-12345678 PEREZ JUAN" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1">C.I. TITULAR</label>
+            <input class="form-control text-center" [(ngModel)]="pacienteData.cedulaTitular" appSoloNumeros maxlength="8" />
+          </div>
+
+          <div class="col-md-8">
+            <label class="form-label fs--1 fw-bold mb-1">BENEFICIARIO (PACIENTE)</label>
+            <input class="form-control" [(ngModel)]="pacienteData.beneficiario" placeholder="Igual al titular o diferente" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1">C.I. / CERTIFICADO</label>
+            <input class="form-control text-center" [(ngModel)]="pacienteData.cedulaBeneficiario" appSoloNumeros maxlength="8" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1">PARENTESCO</label>
+            <select class="form-select" [(ngModel)]="pacienteData.parentesco">
+              <option value="TITULAR">Titular</option>
+              <option value="CONYUGE">Cónyuge</option>
+              <option value="HIJO(A)">Hijo(a)</option>
+              <option value="PADRE">Padre</option>
+              <option value="MADRE">Madre</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1 text-primary">TELÉFONO PRINCIPAL</label>
+            <app-phone-input inputClass="border-primary" [(ngModel)]="pacienteData.telefonoPrincipal"></app-phone-input>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1">TELÉFONO SEC. (Opcional)</label>
+            <app-phone-input [(ngModel)]="pacienteData.telefonoSecundario"></app-phone-input>
+          </div>
+
+          <div class="col-12 mt-4"><h6 class="text-uppercase fw-bolder border-bottom pb-2">2. Información Adicional</h6></div>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Opción Requerida:</label>
+            <select class="form-select border-warning" [(ngModel)]="datosAps.dato2">
+              <option value="">Seleccione...</option>
+              <option *ngFor="let m of especialidades" [value]="m">{{ m }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-white">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-warning fw-bolder" (click)="generarTramite('solicitud-tipo1')">Registrar y Emitir Tipo 1</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- MODAL CARTA AVAL -->
+<!-- ============================================== -->
+<div class="modal fade" id="modalAval" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary">
+        <h5 class="modal-title fw-bold text-white"><i class="fas fa-clipboard-list me-2"></i>Generar Tipo 2</h5>
+        <button type="button" class="btn-close btn-close-white btn-close-modal" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div class="row g-3">
+          <div class="col-12"><h6 class="text-uppercase fw-bolder border-bottom pb-2">1. Datos Personales</h6></div>
+          <div class="col-md-8">
+            <label class="form-label fs--1 fw-bold mb-1">TITULAR</label>
+            <input class="form-control uppercase" [(ngModel)]="pacienteData.titular" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1">C.I. TITULAR</label>
+            <input class="form-control text-center" [(ngModel)]="pacienteData.cedulaTitular" appSoloNumeros maxlength="8" />
+          </div>
+          <div class="col-md-8">
+            <label class="form-label fs--1 fw-bold mb-1">BENEFICIARIO (PACIENTE)</label>
+            <input class="form-control uppercase" [(ngModel)]="pacienteData.beneficiario" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1">C.I. / CERTIFICADO</label>
+            <input class="form-control text-center" [(ngModel)]="pacienteData.cedulaBeneficiario" appSoloNumeros maxlength="8" />
+          </div>
+          <div class="col-md-4">
+             <label class="form-label fs--1 fw-bold mb-1">PARENTESCO</label>
+             <select class="form-select" [(ngModel)]="pacienteData.parentesco">
+               <option value="TITULAR">Titular</option>
+               <option value="CONYUGE">Cónyuge</option>
+               <option value="HIJO(A)">Hijo(a)</option>
+             </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1 text-primary">TELÉFONO PRINCIPAL</label>
+            <app-phone-input inputClass="border-primary" [(ngModel)]="pacienteData.telefonoPrincipal"></app-phone-input>
+          </div>
+
+          <div class="col-12 mt-4"><h6 class="text-uppercase fw-bolder border-bottom pb-2">2. Información Adicional</h6></div>
+          <div class="col-md-8">
+            <label class="form-label fs--1 fw-bold mb-1">ENTIDAD / ESTABLECIMIENTO *</label>
+            <select class="form-select border-primary" [(ngModel)]="datosAval.entidad">
+              <option value="">Seleccione...</option>
+              <option *ngFor="let c of centrosSalud" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1">MONTO PRESUPUESTO (Bs.)</label>
+            <input type="text" class="form-control border-primary fw-bold" appCurrencyMask [(ngModel)]="datosAval.monto" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-white">
+         <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+         <button class="btn btn-primary fw-bolder" (click)="generarTramite('solicitud-tipo2')">Registrar Solicitud Tipo 2</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- MODAL REEMBOLSO -->
+<!-- ============================================== -->
+<div class="modal fade" id="modalReembolso" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success">
+        <h5 class="modal-title fw-bold text-white"><i class="fas fa-money-bill-wave me-2"></i>Generar Tipo 3</h5>
+        <button type="button" class="btn-close btn-close-white btn-close-modal" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div class="row g-3">
+          <div class="col-12"><h6 class="text-uppercase fw-bolder border-bottom pb-2">1. Datos Personales</h6></div>
+          <div class="col-md-8">
+            <label class="form-label fs--1 fw-bold mb-1">TITULAR</label>
+            <input class="form-control uppercase" [(ngModel)]="pacienteData.titular" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1">C.I. TITULAR</label>
+            <input class="form-control text-center" [(ngModel)]="pacienteData.cedulaTitular" appSoloNumeros maxlength="8" />
+          </div>
+          <div class="col-md-8">
+             <label class="form-label fs--1 fw-bold mb-1">BENEFICIARIO (PACIENTE)</label>
+             <input class="form-control uppercase" [(ngModel)]="pacienteData.beneficiario" />
+          </div>
+          <div class="col-md-4">
+             <label class="form-label fs--1 fw-bold mb-1">C.I. / CERTIFICADO</label>
+             <input class="form-control text-center" [(ngModel)]="pacienteData.cedulaBeneficiario" appSoloNumeros maxlength="8" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1 text-primary">TELÉFONO PRINCIPAL</label>
+            <app-phone-input inputClass="border-primary" [(ngModel)]="pacienteData.telefonoPrincipal"></app-phone-input>
+          </div>
+
+          <div class="col-12 mt-4"><h6 class="text-uppercase fw-bolder border-bottom pb-2">2. Información Adicional</h6></div>
+          <div class="col-md-8">
+            <label class="form-label fs--1 fw-bold text-success mb-1">ESTABLECIMIENTO *</label>
+            <select class="form-select border-success" [(ngModel)]="datosReembolso.lugar">
+              <option value="">Seleccione...</option>
+              <option *ngFor="let c of centrosSalud" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1">MONTO TOTAL FACTURAS (Bs.)</label>
+            <input type="text" class="form-control border-success fw-bold" appCurrencyMask [(ngModel)]="datosReembolso.monto" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-white">
+         <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+         <button class="btn btn-success fw-bolder" (click)="generarTramite('solicitud-tipo3')">Registrar Tipo 3</button>
+      </div>
+    </div>
+  </div>
+</div>

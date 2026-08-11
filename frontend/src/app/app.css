@@ -1,0 +1,163 @@
+/* ===============================================*/
+/* Estilos base para el contenido */
+/* ===============================================*/
+
+.content {
+  position: relative;
+  transition:
+    margin-left 0.2s ease,
+    padding-top 0.2s ease;
+  min-height: 100vh;
+  padding-bottom: 70px; /* Space for absolute footer */
+}
+
+/* Estilos para cuando el sidebar está presente */
+.content.with-sidebar {
+  margin-left: 15.875rem; /* Ancho del sidebar */
+}
+
+/* Cuando el sidebar está colapsado */
+.navbar-vertical-collapsed .content.with-sidebar {
+  margin-left: 4rem;
+}
+
+/* Cuando no hay navbar (página de login o 404) */
+.content.no-navbar {
+  padding-top: 0;
+  margin-left: 0 !important;
+  min-height: 100vh;
+}
+
+/* ===============================================*/
+/* Estilos para el navbar vertical (sidebar) */
+/* ===============================================*/
+
+.navbar-vertical {
+  position: fixed;
+  top: 4rem; /* Altura del navbar superior */
+  bottom: 0;
+  left: 0;
+  width: 15.875rem;
+  background-color: var(--phoenix-navbar-vertical-bg-color);
+  border-right: 1px solid var(--phoenix-navbar-vertical-border-color);
+  transition: width 0.2s ease, transform 0.2s ease-in-out;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* Cuando el sidebar está colapsado */
+.navbar-vertical-collapsed .navbar-vertical {
+  width: 4rem;
+}
+
+.navbar-vertical .navbar-vertical-content {
+  padding: 1rem 0;
+}
+
+.navbar-vertical .nav-link {
+  padding: 0.5rem 1rem;
+  color: var(--phoenix-navbar-vertical-link-color);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-vertical .nav-link:hover {
+  background-color: var(--phoenix-navbar-vertical-link-hover-bg);
+  color: var(--phoenix-navbar-vertical-link-hover-color);
+}
+
+.navbar-vertical .nav-link.active {
+  color: var(--phoenix-navbar-vertical-link-active-color);
+  background-color: rgba(56, 116, 255, 0.1);
+}
+
+/* Ocultar texto cuando el sidebar está colapsado */
+.navbar-vertical-collapsed .navbar-vertical .nav-link-text {
+  display: none;
+}
+
+/* Iconos en el sidebar */
+.navbar-vertical .nav-link-icon {
+  min-width: 2rem;
+  display: inline-flex;
+  justify-content: center;
+}
+
+/* Línea separadora */
+.navbar-vertical .navbar-vertical-line {
+  margin: 1rem 1rem;
+  border-color: var(--phoenix-navbar-vertical-hr-color);
+}
+
+/* Avatar en sidebar */
+.navbar-vertical .avatar {
+  transition: all 0.2s ease;
+}
+
+.navbar-vertical-collapsed .navbar-vertical .avatar {
+  margin-right: 0;
+}
+
+.navbar-vertical-collapsed .navbar-vertical .avatar + div {
+  display: none;
+}
+
+/* Ocultar texto cuando el sidebar está colapsado y deshabilitar hover labels flotantes */
+.navbar-vertical-collapsed .navbar-vertical .nav-link-text {
+  display: none !important;
+}
+
+/* Footer alignment */
+footer {
+  padding: 1rem 0;
+  border-top: 1px solid var(--phoenix-border-color);
+  background-color: transparent;
+}
+
+/* ===============================================*/
+/* Estilos para el navbar superior */
+/* ===============================================*/
+
+.navbar-top {
+  z-index: 1001;
+}
+
+/* ===============================================*/
+/* Estilos responsive */
+/* ===============================================*/
+
+@media (max-width: 991.98px) {
+  .content.with-sidebar {
+    margin-left: 0;
+  }
+
+  .navbar-vertical-collapsed .content.with-sidebar {
+    margin-left: 0;
+  }
+
+  .navbar-vertical {
+    transform: translateX(-100%);
+  }
+
+  .navbar-vertical.show {
+    transform: translateX(0);
+  }
+
+  .navbar-top .navbar-toggler {
+    display: inline-flex !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .navbar-top .navbar-toggler {
+    display: none !important;
+  }
+}
+
+/* Sincronización del color amarillo para "Próximo a Vencer" (FEFO/Semáforo) */
+.badge-phoenix-warning {
+  color: #ffc107 !important; /* Amarillo Bootstrap */
+  background-color: rgba(255, 193, 7, 0.1) !important;
+  border-color: rgba(255, 193, 7, 0.2) !important;
+}

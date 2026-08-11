@@ -1,0 +1,248 @@
+<div class="card shadow-none border border-300 p-4">
+  <div class="d-flex align-items-center mb-4">
+    <div class="bg-primary-subtle p-2 rounded-2 me-3">
+      <span class="fas fa-user-check text-primary fs-2"></span>
+    </div>
+    <h4 class="text-primary mb-0 text-uppercase fw-bolder">Verificación de Identidad</h4>
+  </div>
+
+  <div class="row g-3 align-items-end mb-5 bg-light p-3 rounded-3 border">
+    <div class="col-md-8">
+      <label class="form-label fw-bold text-700 text-uppercase">Ingrese Cédula del Titular</label>
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0"
+          ><i class="fas fa-id-card text-400"></i
+        ></span>
+        <input
+          type="text"
+          class="form-control border-start-0 ps-0"
+          [(ngModel)]="cedulaBusqueda"
+          placeholder="Ej: 18455632"
+          (keyup.enter)="buscar()"
+          appSoloNumeros
+          maxlength="8"
+        />
+        <button
+          *ngIf="cedulaBusqueda"
+          class="btn bg-white border-start-0 border-end-0 text-400"
+          type="button"
+          (click)="cancelar()"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <button class="btn btn-primary w-100 fw-bolder" (click)="buscar()">
+        <span class="fas fa-search me-2"></span>VERIFICAR REGISTRO
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="usuarioEncontrado" class="animate__animated animate__fadeIn">
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="p-4 rounded-3 border border-200 bg-white shadow-sm mb-4">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <span class="badge badge-phoenix badge-phoenix-primary mb-2">{{
+                usuarioEncontrado.tipo_empleado
+              }}</span>
+              <h3 class="text-900 fw-bolder text-uppercase mb-1">
+                {{ usuarioEncontrado.nombres_titular }} {{ usuarioEncontrado.apellidos_titular }}
+              </h3>
+              <p class="text-600 fw-bold mb-0">
+                C.I: {{ usuarioEncontrado.cedula | cedulaFormat }} | 
+                <i class="fas fa-venus-mars mx-1"></i> {{ usuarioEncontrado.sexo | genero }} | 
+                <i class="fas fa-birthday-cake mx-1"></i> {{ usuarioEncontrado.fecha_nacimiento | edad }}
+              </p>
+            </div>
+            <div class="text-end">
+              <span
+                class="badge fs--2"
+                [ngClass]="
+                  usuarioEncontrado.status === 'ACTIVO'
+                    ? 'badge-phoenix-success'
+                    : 'badge-phoenix-danger'
+                "
+              >
+                {{ usuarioEncontrado.status }}
+              </span>
+            </div>
+          </div>
+
+          <div class="row g-3 small">
+            <div class="col-6">
+              <label class="text-500 fw-bold mb-0 text-uppercase fs--2">Dependencia</label>
+              <p class="text-800 mb-0 fw-bold">{{ usuarioEncontrado.dependencia }}</p>
+            </div>
+            <div class="col-6">
+              <label class="text-500 fw-bold mb-0 text-uppercase fs--2">Cargo</label>
+              <p class="text-800 mb-0">{{ usuarioEncontrado.cargo }}</p>
+            </div>
+            <div class="col-6">
+              <label class="text-500 fw-bold mb-0 text-uppercase fs--2">Teléfono</label>
+              <p class="text-800 mb-0">{{ usuarioEncontrado.telefono_principal || 'No registra' }}</p>
+            </div>
+            <div class="col-6">
+              <label class="text-500 fw-bold mb-0 text-uppercase fs--2">Correo Electrónico</label>
+              <p class="text-800 mb-0">{{ usuarioEncontrado.correo_electronico || 'No registra' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <h6 class="text-700 mb-3 text-uppercase fw-bolder fs--1">
+          <i class="fas fa-users me-2 text-primary"></i>Cargas Familiares Disponibles
+        </h6>
+        <div class="table-responsive bg-white border rounded-3 mb-4">
+          <table class="table table-sm fs--1 mb-0">
+            <thead class="bg-light">
+              <tr>
+                <th class="white-space-nowrap align-middle ps-3 py-2">PARENTESCO</th>
+                <th class="white-space-nowrap align-middle py-2">NOMBRE COMPLETO</th>
+                <th class="white-space-nowrap align-middle py-2 text-center">EDAD/GÉNERO</th>
+                <th class="white-space-nowrap align-middle py-2">IDENTIFICACIÓN</th>
+                <th class="white-space-nowrap align-middle text-end pe-3 py-2">ACCIÓN</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="bg-primary-subtle">
+                <td class="align-middle ps-3 fw-bold">TITULAR</td>
+                <td class="align-middle">EL MISMO</td>
+                <td class="align-middle text-center">
+                  {{ usuarioEncontrado.fecha_nacimiento | edad }} / {{ usuarioEncontrado.sexo | genero }}
+                </td>
+                <td class="align-middle h5 mb-0 fw-bold">
+                  <span class="badge badge-phoenix badge-phoenix-primary">{{ usuarioEncontrado.cedula | cedulaFormat }}</span>
+                </td>
+                <td class="align-middle text-end pe-3">
+                  <button
+                    class="btn btn-primary btn-sm px-3"
+                    (click)="seleccionarBeneficiario(usuarioEncontrado, 'TITULAR')"
+                  >
+                    Seleccionar
+                  </button>
+                </td>
+              </tr>
+              <tr *ngFor="let carga of usuarioEncontrado.cargas_familiares">
+                <td class="align-middle ps-3 fw-bold text-uppercase">{{ carga.parentesco }}</td>
+                <td class="align-middle text-uppercase">
+                  {{ carga.nombres }} {{ carga.apellidos }}
+                </td>
+                <td class="align-middle text-center">
+                  {{ carga.fecha_nacimiento | edad }} / {{ carga.sexo | genero }}
+                </td>
+                <td class="align-middle h6 mb-0 fw-bold">
+                  <span class="badge badge-phoenix" [ngClass]="carga.certificado_medico && !carga.cedula_beneficiario ? 'badge-phoenix-warning' : 'badge-phoenix-info'">
+                    {{ carga.cedula_beneficiario | cedulaFormat:(carga.certificado_medico && !carga.posee_cedula) }}
+                  </span>
+                </td>
+                <td class="align-middle text-end pe-3">
+                  <button
+                    class="btn btn-outline-primary btn-sm px-3"
+                    (click)="seleccionarBeneficiario(carga, 'BENEFICIARIO')"
+                  >
+                    Seleccionar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="card border border-300 shadow-none h-100">
+          <div class="card-body">
+            <h6 class="text-700 text-uppercase fw-bolder mb-4 text-center">
+              <i class="fas fa-chart-line me-2 text-success"></i>Estado de los Límites / Cupos
+            </h6>
+
+            <!-- Póliza Titular -->
+            <div class="mb-4">
+              <h6 class="fs--1 text-uppercase fw-bold text-600 mb-2 border-bottom pb-1"><i class="fas fa-user-circle me-1"></i> {{ usuarioEncontrado.nombres_titular }} (Titular)</h6>
+              <div class="d-flex justify-content-between mb-1">
+                <div class="fs--2 fw-bold text-success">
+                  Disponible: Bs. {{ montoDisponibleBs | bsFormat }}
+                  <div class="fw-normal text-600" *ngIf="tasaDolar" style="font-size: 11px;">
+                    (Ref: ${{ (montoDisponibleBs / tasaDolar) | bsFormat }} / €{{ (montoDisponibleBs / tasaEuro) | bsFormat }})
+                  </div>
+                </div>
+                <div class="fs--2 fw-bold text-danger text-end">
+                  Gastado: Bs. {{ montoGastadoBs | bsFormat }}
+                  <div class="fw-normal text-600" *ngIf="tasaDolar" style="font-size: 11px;">
+                    (Ref: ${{ (montoGastadoBs / tasaDolar) | bsFormat }} / €{{ (montoGastadoBs / tasaEuro) | bsFormat }})
+                  </div>
+                </div>
+              </div>
+              <div class="progress mb-2" style="height: 10px">
+                <div class="progress-bar bg-success" role="progressbar" [style.width.%]="100 - porcentajeConsumido"></div>
+                <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="porcentajeConsumido"></div>
+              </div>
+            </div>
+
+            <!-- Límites Cargas Familiares -->
+            <div *ngFor="let carga of usuarioEncontrado.cargas_familiares; let i = index" class="mb-4">
+              <h6 class="fs--1 text-uppercase fw-bold text-600 mb-2 border-bottom pb-1"><i class="fas fa-user-friends me-1"></i> {{ carga.nombres }} ({{ carga.parentesco }})</h6>
+              <div class="d-flex justify-content-between mb-1">
+                <div class="fs--2 fw-bold text-success">
+                  Disponible: Bs. {{ Math.max(0, montoDisponibleBs - (i*20000)) | bsFormat }}
+                  <div class="fw-normal text-600" *ngIf="tasaDolar" style="font-size: 11px;">
+                    (Ref: ${{ (Math.max(0, montoDisponibleBs - (i*20000)) / tasaDolar) | bsFormat }} / €{{ (Math.max(0, montoDisponibleBs - (i*20000)) / tasaEuro) | bsFormat }})
+                  </div>
+                </div>
+                <div class="fs--2 fw-bold text-danger text-end">
+                  Gastado: Bs. {{ (montoGastadoBs + (i*20000)) | bsFormat }}
+                  <div class="fw-normal text-600" *ngIf="tasaDolar" style="font-size: 11px;">
+                    (Ref: ${{ ((montoGastadoBs + (i*20000)) / tasaDolar) | bsFormat }} / €{{ ((montoGastadoBs + (i*20000)) / tasaEuro) | bsFormat }})
+                  </div>
+                </div>
+              </div>
+              <div class="progress" style="height: 10px">
+                <div class="progress-bar bg-success" role="progressbar" [style.width.%]="Math.max(0, 100 - (porcentajeConsumido + (i*10)))"></div>
+                <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="porcentajeConsumido + (i*10)"></div>
+              </div>
+            </div>
+
+            <div class="bg-light p-3 rounded-2 mt-4 text-center">
+              <p class="mb-2 fs--1"><strong>Deducible por Paciente:</strong> Bs. {{ 0 | bsFormat }}</p>
+              <p class="mb-0 fs--1"><strong>Vigencia Global:</strong> {{ '2026-01-01' | date:'dd/MM/yyyy' }} - {{ '2026-12-31' | date:'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5 border-top pt-4">
+      <h6 class="text-700 mb-3 text-uppercase fw-bolder fs--1 text-center">
+        <i class="fas fa-tasks me-2"></i>Seleccione el trámite para el funcionario/beneficiario:
+      </h6>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <button
+            class="btn btn-outline-primary w-100 p-4 fw-bold shadow-sm"
+            (click)="iniciarTramite('solicitud-tipo1')"
+          >
+            <i class="fas fa-file-alt d-block mb-2 fs-2"></i> SOLICITUD TIPO 1
+          </button>
+        </div>
+        <div class="col-md-4">
+          <button
+            class="btn btn-outline-success w-100 p-4 fw-bold shadow-sm"
+            (click)="iniciarTramite('solicitud-tipo2')"
+          >
+            <i class="fas fa-clipboard-list d-block mb-2 fs-2"></i> SOLICITUD TIPO 2
+          </button>
+        </div>
+        <div class="col-md-4">
+          <button
+            class="btn btn-outline-info w-100 p-4 fw-bold shadow-sm"
+            (click)="iniciarTramite('solicitud-tipo3')"
+          >
+            <i class="fas fa-money-bill-wave d-block mb-2 fs-2"></i> SOLICITUD TIPO 3
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

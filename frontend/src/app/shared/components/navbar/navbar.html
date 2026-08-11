@@ -1,0 +1,107 @@
+<nav class="navbar navbar-top fixed-top navbar-expand-lg" id="navbarTop">
+  <div class="navbar-logo">
+    <button
+      class="btn navbar-toggler navbar-toggler-humburger-icon hover-bg-transparent"
+      type="button"
+      (click)="toggleSidebar()"
+    >
+      <span class="navbar-toggle-icon"><span class="toggle-line"></span></span>
+    </button>
+    <a class="navbar-brand me-1 me-sm-3" routerLink="/inicio">
+      <div class="d-flex align-items-center">
+        <img src="assets/img/dem.png" alt="Logo" width="90" />
+      </div>
+    </a>
+  </div>
+
+  <div
+    class="collapse navbar-collapse navbar-top-collapse order-1 order-lg-0 justify-content-center"
+    id="navbarTopCollapse"
+  >
+    <ul class="navbar-nav navbar-nav-top">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/inicio"> <span class="fas fa-home me-2"></span>Inicio </a>
+      </li>
+    </ul>
+  </div>
+
+  <ul class="navbar-nav navbar-nav-icons flex-row">
+    <li class="nav-item">
+      <div class="theme-control-toggle fa-icon-wait px-2">
+        <input
+          class="form-check-input ms-0 theme-control-toggle-input"
+          type="checkbox"
+          [checked]="isDarkTheme"
+          (change)="toggleTheme()"
+          value="dark"
+          id="themeControlToggle"
+        />
+        <label
+          class="mb-0 theme-control-toggle-label theme-control-toggle-light"
+          for="themeControlToggle"
+          data-bs-toggle="tooltip"
+          title="Modo Oscuro"
+        >
+          <span class="icon" data-feather="moon"></span>
+        </label>
+        <label
+          class="mb-0 theme-control-toggle-label theme-control-toggle-dark"
+          for="themeControlToggle"
+          data-bs-toggle="tooltip"
+          title="Modo Claro"
+        >
+          <span class="icon" data-feather="sun"></span>
+        </label>
+      </div>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchBoxModal">
+        <span data-feather="search" style="height: 19px; width: 19px"></span>
+      </a>
+    </li>
+
+    <li class="nav-item dropdown">
+      <a
+        class="nav-link lh-1 pe-0"
+        id="navbarDropdownUser"
+        href="#!"
+        role="button"
+        data-bs-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <div class="avatar avatar-l">
+          <img class="rounded-circle" src="assets/img/team/40x40/57.webp" alt="Usuario" />
+        </div>
+      </a>
+      <div
+        class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300"
+      >
+        <div class="card position-relative border-0">
+          <div class="card-body p-0">
+            <div class="text-center pt-4 pb-3">
+              <div class="avatar avatar-xl">
+                <img class="rounded-circle" src="assets/img/team/72x72/57.webp" alt="" />
+              </div>
+              <h6 class="mt-2 text-black mb-0">{{ user?.first_name }} {{ user?.last_name }}</h6>
+              <p class="text-600 fs--2 mb-1">@{{ user?.username }}</p>
+              <span class="badge badge-phoenix badge-phoenix-primary fs--2">{{ user?.rol }}</span>
+            </div>
+          </div>
+          <div class="card-footer p-0 border-top">
+            <div class="px-3 py-3">
+              <a
+                class="btn btn-phoenix-secondary d-flex flex-center w-100"
+                href="#!"
+                (click)="logout(); $event.preventDefault()"
+              >
+                <span class="me-2" data-feather="log-out"></span>Cerrar Sesión
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</nav>

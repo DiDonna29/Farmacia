@@ -1,0 +1,123 @@
+<div class="row g-4">
+  <!-- Columna del listado de solicitudes -->
+  <div class="col-lg-7">
+    <div class="card shadow-none border border-300">
+      <div class="card-header border-bottom d-flex justify-content-between align-items-center bg-light">
+        <h5 class="mb-0 text-uppercase fw-bolder text-800">
+          <i class="fas fa-clipboard-list text-primary me-2"></i>Bandeja de Revisión
+        </h5>
+        <span class="badge badge-phoenix badge-phoenix-primary rounded-pill">
+          {{ solicitudes.length }} Pendientes
+        </span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-sm fs--1 mb-0 align-middle">
+            <thead class="bg-200 text-900">
+              <tr>
+                <th class="ps-3 border-0">NRO. SOLICITUD</th>
+                <th class="border-0">FECHA</th>
+                <th class="border-0">TIPO</th>
+                <th class="border-0">TITULAR / BENEFICIARIO</th>
+                <th class="text-end pe-3 border-0">ACCIÓN</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="solicitudes.length === 0">
+                <td colspan="5" class="text-center py-4 text-500 fw-bold">
+                  No hay solicitudes pendientes por revisión
+                </td>
+              </tr>
+              <tr *ngFor="let sol of solicitudes" class="hover-actions-trigger" [class.bg-primary-subtle]="solicitudSeleccionada?.id === sol.id">
+                <td class="ps-3 fw-bold text-primary">{{ sol.id }}</td>
+                <td>{{ sol.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <span class="badge badge-phoenix badge-phoenix-info text-uppercase">
+                    {{ sol.tipo }}
+                  </span>
+                </td>
+                <td>
+                  <div class="fw-bold">{{ sol.datosPaciente.titularVinculado | uppercase }}</div>
+                  <div class="text-500 fs--2" *ngIf="sol.datosPaciente.parentesco !== 'TITULAR'">Carga: {{ sol.datosPaciente.nombre | uppercase }}</div>
+                </td>
+                <td class="text-end pe-3">
+                  <button class="btn btn-sm btn-outline-primary" (click)="verDetalle(sol)">
+                    Revisar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Columna de detalles (Panel derecho) -->
+  <div class="col-lg-5" *ngIf="solicitudSeleccionada">
+    <div class="card shadow-none border border-300 animate__animated animate__fadeInRight">
+      <div class="card-header bg-light border-bottom d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 text-uppercase fw-bolder">Detalle del Trámite</h6>
+        <button class="btn btn-link text-500 p-0" (click)="cerrarDetalle()">
+          <i class="fas fa-times fs-1"></i>
+        </button>
+      </div>
+      
+      <div class="card-body">
+        <!-- Info del Paciente -->
+        <h6 class="text-700 text-uppercase fw-bold fs--2 mb-2"><i class="fas fa-user-circle me-1"></i> Datos del Solicitante / Beneficiario</h6>
+        <div class="bg-light p-3 rounded-2 mb-4 border">
+          <p class="mb-1 fs--1"><strong>Titular:</strong> {{ solicitudSeleccionada.datosPaciente.titularVinculado | uppercase }}</p>
+          <div class="border-top pt-2 mt-2">
+            <p class="mb-1 fs--1">
+              <strong>Solicitante:</strong> <span class="text-primary fw-bold">{{ solicitudSeleccionada.datosPaciente.nombre | uppercase }}</span>
+              <span class="badge badge-phoenix badge-phoenix-secondary ms-2 align-middle">{{ solicitudSeleccionada.datosPaciente.parentesco }}</span>
+            </p>
+            <p class="mb-1 fs--1">
+              <strong>Cédula:</strong> {{ solicitudSeleccionada.datosPaciente.cedula | cedulaFormat:solicitudSeleccionada.datosPaciente.esCertificado }}
+            </p>
+            <p class="mb-0 fs--1">
+              <strong>Género / Edad:</strong> {{ solicitudSeleccionada.datosPaciente.sexoBeneficiario | genero }} / {{ solicitudSeleccionada.datosPaciente.fechaNacimientoBeneficiario | edad }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Info del Trámite -->
+        <h6 class="text-700 text-uppercase fw-bold fs--2 mb-2">Información de la Solicitud</h6>
+        <div class="bg-light p-3 rounded-2 mb-4 border">
+          <p class="mb-1 fs--1"><strong>Tipo de Trámite:</strong> <span class="text-uppercase">{{ solicitudSeleccionada.tipo }}</span></p>
+          
+          <ng-container *ngIf="solicitudSeleccionada.tipo === 'solicitud-tipo1'">
+            <p class="mb-1 fs--1"><strong>Dato Adicional 1:</strong> {{ solicitudSeleccionada.datosFormulario.especialidad }}</p>
+          </ng-container>
+          
+          <ng-container *ngIf="solicitudSeleccionada.tipo === 'solicitud-tipo2'">
+            <p class="mb-1 fs--1"><strong>Entidad:</strong> {{ solicitudSeleccionada.datosFormulario.clinica }}</p>
+            <p class="mb-1 fs--1"><strong>Monto:</strong> {{ solicitudSeleccionada.datosFormulario.monto | currency }}</p>
+            <p class="mb-0 fs--1"><strong>Descripción:</strong> {{ solicitudSeleccionada.datosFormulario.diagnostico }}</p>
+          </ng-container>
+          
+          <ng-container *ngIf="solicitudSeleccionada.tipo === 'solicitud-tipo3'">
+            <p class="mb-1 fs--1"><strong>Lugar:</strong> {{ solicitudSeleccionada.datosFormulario.centroSalud }}</p>
+            <p class="mb-1 fs--1"><strong>Monto Total:</strong> {{ solicitudSeleccionada.datosFormulario.montoTotal | currency }}</p>
+            <p class="mb-0 fs--1"><strong>Motivo:</strong> {{ solicitudSeleccionada.datosFormulario.motivoReembolso }}</p>
+          </ng-container>
+        </div>
+
+        <!-- Acciones de Decisión -->
+        <h6 class="text-700 text-uppercase fw-bold fs--2 mb-3 border-top pt-3">Decisión del Administrador</h6>
+        <div class="d-grid gap-2">
+          <button class="btn btn-success fw-bold" (click)="cambiarEstado('APROBADO')">
+            <i class="fas fa-check-circle me-2"></i>Aprobar Solicitud
+          </button>
+          <button class="btn btn-warning fw-bold" (click)="cambiarEstado('DEVUELTO')">
+            <i class="fas fa-undo me-2"></i>Devolver a Front
+          </button>
+          <button class="btn btn-danger fw-bold" (click)="cambiarEstado('RECHAZADO')">
+            <i class="fas fa-times-circle me-2"></i>Rechazar Definitivamente
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="progress" style="height: 10px;">
+  <div
+    class="progress-bar"
+    role="progressbar"
+    [style.width.%]="porcentaje"
+    [attr.aria-valuenow]="porcentaje"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    [ngClass]="colorClase"
+  ></div>
+</div>
+<small class="text-muted mt-1 d-block">
+  Usado: {{ coberturaUsada | currency: 'USD' }} / Límite: {{ limite | currency: 'USD' }}
+  ({{ porcentaje | number: '1.0-0' }}%)
+</small>

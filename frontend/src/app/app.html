@@ -1,0 +1,17 @@
+<main class="main" id="top">
+  
+  <app-sidebar *ngIf="showNavbar"></app-sidebar>
+
+  <app-navbar 
+    *ngIf="showNavbar" 
+    (toggleSidebar)="handleSidebarToggle()">
+  </app-navbar>
+
+  <div class="content" [ngClass]="{ 'with-sidebar': showNavbar, 'p-0': !showNavbar }">
+    
+    <router-outlet></router-outlet>
+    
+    <app-footer *ngIf="showNavbar"></app-footer>
+
+  </div>
+</main>

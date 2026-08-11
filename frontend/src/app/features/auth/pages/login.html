@@ -1,0 +1,99 @@
+<main
+  class="main"
+  id="top"
+  style="
+    background-image: url('assets/img/bg/bg-36.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+  "
+>
+  <div class="container">
+    <div class="row flex-center min-vh-100 py-5">
+      <div class="col-sm-10 col-md-8 col-lg-5 col-xl-5 col-xxl-3">
+        <a class="d-flex flex-center text-decoration-none">
+          <div class="d-flex align-items-center fw-bolder fs-5 d-inline-block">
+            <img src="assets/img/fasdem.png" alt="logo" width="550" />
+          </div>
+        </a>
+        <div class="position-relative">
+          <hr class="bg-200 mt-5 mb-4" />
+          <div class="divider-content-center">Introduzca sus datos</div>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+          <div class="mb-3 text-start">
+            <label class="form-label" for="user">Usuario</label>
+            <div class="form-icon-container">
+              <input
+                class="form-control form-icon-input"
+                id="user"
+                name="username"
+                [(ngModel)]="credentials.username"
+                type="text"
+                placeholder="Usuario"
+                required
+                #username="ngModel"
+              />
+              <span class="fas fa-user text-900 fs--1 form-icon"></span>
+            </div>
+            <div *ngIf="username.invalid && username.touched" class="text-danger small">
+              El usuario es requerido
+            </div>
+          </div>
+
+          <div class="mb-3 text-start">
+            <label class="form-label" for="password">Contraseña</label>
+            <div class="form-icon-container">
+              <input
+                class="form-control form-icon-input"
+                id="password"
+                name="password"
+                [(ngModel)]="credentials.password"
+                type="password"
+                placeholder="Contraseña"
+                required
+                #password="ngModel"
+              />
+              <span class="fas fa-key text-900 fs--1 form-icon"></span>
+            </div>
+            <div *ngIf="password.invalid && password.touched" class="text-danger small">
+              La contraseña es requerida
+            </div>
+          </div>
+
+          <!-- Mensaje de error -->
+          <div *ngIf="errorMessage" class="alert alert-danger mb-3" role="alert">
+            {{ errorMessage }}
+          </div>
+
+          <div class="row flex-between-center mb-4">
+            <div class="col-auto">
+              <div class="form-check mb-0">
+                <input class="form-check-input" id="basic-checkbox" type="checkbox" checked />
+                <label class="form-check-label mb-0" for="basic-checkbox">Recordarme</label>
+              </div>
+            </div>
+            <div class="col-auto">
+              <a class="fs--1 fw-semi-bold" href="">¿Olvidó su contraseña?</a>
+            </div>
+          </div>
+
+          <button
+            class="btn btn-primary w-100 mb-3"
+            type="submit"
+            [disabled]="loginForm.invalid || isLoading"
+          >
+            <span
+              *ngIf="isLoading"
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            {{ isLoading ? 'Iniciando...' : 'Iniciar Sesión' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>

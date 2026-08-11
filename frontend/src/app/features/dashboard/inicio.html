@@ -1,0 +1,107 @@
+<div class="pb-5 animate__animated animate__fadeIn">
+  <div class="row g-4">
+    <div class="col-12">
+      <div class="d-flex align-items-center mb-4">
+        <div class="bg-primary p-3 rounded-circle me-3 text-white shadow">
+          <i class="fas fa-home fs-3"></i>
+        </div>
+        <div>
+          <h2 class="mb-1 fw-bold text-800 text-uppercase">Inicio y Panel de Control</h2>
+          <h5 class="text-600 fw-semi-bold mb-0">Bienvenido al Sistema. Seleccione una acción rápida.</h5>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menú de Acciones por Rol -->
+    <div class="col-12 col-xl-8">
+      <div class="card h-100 shadow-none border border-300">
+        <div class="card-header border-bottom bg-light">
+          <h5 class="mb-0 text-uppercase fw-bold text-700">
+            <i class="fas fa-th-large text-secondary me-2"></i>Gestiones Rápidas
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-4">
+            
+            <!-- Acciones Analista Front -->
+            <ng-container *ngIf="rol === 'ANALISTA_FRONT'">
+              <div class="col-sm-6 col-md-4">
+                <a routerLink="/front/verificar" class="text-decoration-none">
+                  <div class="card h-100 bg-primary-subtle border-0 hover-lift text-center py-4">
+                    <i class="fas fa-user-check text-primary fs-4 mb-3"></i>
+                    <h6 class="fw-bold text-primary-emphasis px-3">Verificar Funcionario y Trámites</h6>
+                  </div>
+                </a>
+              </div>
+              <div class="col-sm-6 col-md-4">
+                <a routerLink="/front/bandeja-devueltos" class="text-decoration-none">
+                  <div class="card h-100 bg-warning-subtle border-0 hover-lift text-center py-4">
+                    <i class="fas fa-undo text-warning fs-4 mb-3"></i>
+                    <h6 class="fw-bold text-warning-emphasis px-3">Bandeja de Contraloría (Devueltos)</h6>
+                  </div>
+                </a>
+              </div>
+            </ng-container>
+
+            <!-- Acciones Administrador -->
+            <ng-container *ngIf="rol === 'ADMINISTRADOR'">
+              <div class="col-sm-6 col-md-4">
+                <a routerLink="/admin/bandeja-revision" class="text-decoration-none">
+                  <div class="card h-100 bg-info-subtle border-0 hover-lift text-center py-4 relative">
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" *ngIf="solicitudesPendientes > 0">
+                      {{ solicitudesPendientes }}
+                    </span>
+                    <i class="fas fa-clipboard-check text-info fs-4 mb-3"></i>
+                    <h6 class="fw-bold text-info-emphasis px-3">Bandeja de Revisión</h6>
+                  </div>
+                </a>
+              </div>
+              <div class="col-sm-6 col-md-4">
+                <a routerLink="/admin/historial" class="text-decoration-none">
+                  <div class="card h-100 bg-secondary-subtle border-0 hover-lift text-center py-4">
+                    <i class="fas fa-history text-secondary fs-4 mb-3"></i>
+                    <h6 class="fw-bold text-secondary-emphasis px-3">Historial de Casos</h6>
+                  </div>
+                </a>
+              </div>
+              <div class="col-sm-6 col-md-4">
+                <a routerLink="/admin/hoja-ruta" class="text-decoration-none">
+                  <div class="card h-100 bg-primary-subtle border-0 hover-lift text-center py-4">
+                    <i class="fas fa-route text-primary fs-4 mb-3"></i>
+                    <h6 class="fw-bold text-primary-emphasis px-3">Hoja de Ruta (Emergencias)</h6>
+                  </div>
+                </a>
+              </div>
+            </ng-container>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Búsqueda Rápida de Funcionario (Solo Lectura) -->
+    <div class="col-12 col-xl-4">
+      <div class="card h-100 shadow-none border border-300">
+        <div class="card-header border-bottom bg-light">
+          <h5 class="mb-0 text-uppercase fw-bold text-700">
+            <i class="fas fa-search text-secondary me-2"></i>Consulta Rápida Póliza
+          </h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="buscarFuncionario()" class="mb-4">
+            <label class="form-label fs--1 fw-bold">CÉDULA TITULAR</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white"><i class="fas fa-id-card"></i></span>
+              <input type="text" class="form-control" name="cedula" [(ngModel)]="cedulaBusqueda" placeholder="Ej: 18455632" required>
+              <button class="btn btn-primary px-3" type="submit" [disabled]="!cedulaBusqueda"><i class="fas fa-search"></i></button>
+            </div>
+          </form>
+          <div class="text-center text-muted py-5">
+             <i class="fas fa-search-plus fs-3 mb-2 text-300"></i>
+             <p class="mb-0 fs--1">Ingrese una cédula de identidad para consultar el consumo global de pólizas del funcionario y sus cargas familiares asociadas.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

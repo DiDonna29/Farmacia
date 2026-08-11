@@ -1,0 +1,241 @@
+<div class="card shadow-none border border-300 my-4">
+  <div class="card-header border-bottom border-300 bg-primary-subtle py-3">
+    <div class="d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center">
+        <button
+          class="btn btn-link text-primary ps-0 me-3 shadow-none"
+          routerLink="/front/verificar"
+          title="Volver a búsqueda"
+        >
+          <i class="fas fa-arrow-left fs-1"></i>
+        </button>
+        <img src="assets/img/dem.png" alt="LOGO" width="45" class="me-3" />
+        <div>
+          <h5 class="mb-0 text-primary-emphasis fw-bolder text-uppercase">
+            Solicitud de Tipo 2
+          </h5>
+          <span class="text-primary-emphasis fs--2 fw-bold text-uppercase opacity-75"
+            >Formulario G-002</span
+          >
+        </div>
+      </div>
+      <div class="text-end">
+        <span class="badge badge-phoenix badge-phoenix-primary fs--1 fw-bold">ID: #CA-2026</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="observacionesRechazo" class="alert d-flex align-items-center justify-content-between mb-4 bg-warning-subtle border border-warning shadow-sm rounded-3" role="alert">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-exclamation-circle fs-3 me-3 text-warning"></i>
+        <div>
+          <h6 class="alert-heading fw-bolder mb-0 text-warning-emphasis">Se requieren correcciones para continuar</h6>
+          <span class="fs--1 text-warning-emphasis">El administrador devolvió esta solicitud para subsanar un error.</span>
+        </div>
+      </div>
+      <button class="btn btn-warning btn-sm fw-bold shadow-none text-dark" data-bs-toggle="modal" data-bs-target="#modalObservacionesAval">
+         Leer Observaciones
+      </button>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-12 border-bottom border-translucent">
+        <h6 class="text-primary text-uppercase mb-1 fw-bolder">I. Datos Personales</h6>
+      </div>
+
+      <div class="col-md-5">
+        <label class="form-label fs--1 fw-bold mb-1">FUNCIONARIO / TITULAR</label>
+        <div class="form-control bg-light fw-bold px-2">{{ datos.titular | uppercase }}</div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fs--1 fw-bold mb-1">EDAD Y GÉNERO</label>
+        <div class="form-control bg-light text-center fw-bold fs--1 px-2">{{ datos.fechaNacimientoTitular | edad }} - {{ datos.sexoTitular | genero }}</div>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fs--1 fw-bold mb-1">CÉDULA DE IDENTIDAD</label>
+        <div class="form-control bg-light text-center fw-bold px-2">{{ datos.cedulaTitular | cedulaFormat }}</div>
+      </div>
+
+      <div class="col-md-5">
+        <label class="form-label fs--1 fw-bold mb-1">BENEFICIARIO / SOLICITANTE</label>
+        <div class="form-control bg-light fw-bold border-primary border-2 bg-primary-subtle text-primary-emphasis px-2">
+          {{ datos.beneficiario | uppercase }}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fs--1 fw-bold mb-1 text-primary">EDAD Y GÉNERO</label>
+        <div class="form-control bg-light fw-bold border-primary border-2 text-primary-emphasis text-center fs--1 px-2">
+          {{ datos.fechaNacimientoBeneficiario | edad }} - {{ datos.sexoBeneficiario | genero }}
+        </div>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fs--1 fw-bold mb-1 text-primary" [ngClass]="{'fs--2': datos.esCertificado}">{{ datos.esCertificado ? 'CERTIFICADO DE NACIMIENTO' : 'CÉDULA / IDENTIFICACIÓN' }}</label>
+        <div class="form-control bg-light text-center fw-bold text-primary border-primary border-2 px-2 h5 mb-0">
+          {{ datos.cedulaBeneficiario | cedulaFormat:datos.esCertificado }}
+        </div>
+      </div>
+
+      <div class="col-md-5">
+        <label class="form-label fs--1 fw-bold mb-1 text-primary">TELÉFONOS DE CONTACTO</label>
+        <app-phone-input inputClass="border-primary" [(ngModel)]="datos.telefonoPrincipal"></app-phone-input>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label text-700 fs--1">TELÉFONO SECUNDARIO (OPCIONAL)</label>
+        <app-phone-input inputClass="border-primary" [(ngModel)]="datos.telefonoSecundario"></app-phone-input>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fs--1 fw-bold mb-1 text-primary">CORREO ELECTRÓNICO</label>
+        <input class="form-control border-primary" type="email" [(ngModel)]="datos.correo" />
+      </div>
+
+      <div class="col-12 mt-3">
+        <h6 class="text-primary text-uppercase mb-2 fw-bolder border-bottom pb-1">
+          II. Datos Clínicos
+        </h6>
+        <div class="row g-2">
+          <div class="col-md-8">
+            <label class="form-label fs--1 fw-bold mb-1">ENTIDAD / ESTABLECIMIENTO *</label>
+            <div class="input-group">
+              <input
+                class="form-control border-primary bg-white fw-bold"
+                [value]="centroSeleccionado"
+                readonly
+                placeholder="Seleccione entidad..."
+              />
+              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAval">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fs--1 fw-bold mb-1">MONTO PRESUPUESTO (Bs.)</label>
+            <input
+              type="text"
+              class="form-control border-primary fw-bold"
+              appCurrencyMask
+              [(ngModel)]="datos.monto"
+            />
+          </div>
+          <div class="col-12">
+            <label class="form-label fs--1 fw-bold mb-1">DESCRIPCIÓN DE LA SOLICITUD</label>
+            <textarea
+              class="form-control border-primary"
+              rows="2"
+              [(ngModel)]="datos.diagnostico"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 mt-3">
+        <h6 class="text-primary text-uppercase mb-2 fw-bolder border-bottom pb-1">
+          III. Requisitos Consignados
+        </h6>
+        <div class="bg-body-highlight p-3 border border-300 rounded">
+          <div class="row g-3">
+            <div
+              class="col-md-6 d-flex justify-content-between align-items-center"
+              *ngFor="
+                let req of [
+                  'DOCUMENTO DE IDENTIDAD',
+                  'PRESUPUESTO VIGENTE',
+                  'SOPORTES DE LA SOLICITUD',
+                  'OTROS DOCUMENTOS',
+                ]
+              "
+            >
+              <span class="fs--1 fw-bold text-700">{{ req }}</span>
+              <input type="checkbox" class="form-check-input shadow-none" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 text-end mt-4 border-top pt-3">
+        <button
+          class="btn btn-outline-danger px-4 fw-bold me-2"
+          routerLink="/operaciones/verificar"
+        >
+          <i class="fas fa-ban me-2"></i>CANCELAR TRÁMITE
+        </button>
+        <button class="btn btn-primary px-5 fw-bolder shadow-sm" (click)="registrar()">
+          <i class="fas fa-cloud-upload-alt me-2"></i>{{ solicitudId ? 'ACTUALIZAR SOLICITUD TIPO 2' : 'REGISTRAR SOLICITUD' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalAval" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold">Directorio Médico</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group mb-3">
+          <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-400"></i></span>
+          <input
+            type="text"
+            class="form-control border-start-0 ps-0"
+            placeholder="Buscar clínica..."
+            [(ngModel)]="busquedaCentro"
+            (ngModelChange)="alBuscar()"
+          />
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover table-sm border align-middle mb-0">
+            <thead class="bg-light">
+              <tr>
+                <th class="py-2 text-700">Nombre del Centro de Salud</th>
+                <th class="py-2 text-end text-700">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of centrosPaginados">
+                <td class="fw-bold">{{ c.nombre }}</td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-primary shadow-none" (click)="seleccionar(c.nombre)" data-bs-dismiss="modal">
+                    Seleccionar
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="centrosPaginados.length === 0">
+                <td colspan="2" class="text-center text-muted py-4">No se encontraron clínicas</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="totalPaginas > 1">
+          <button class="btn btn-sm btn-falcon-default" [disabled]="paginaActual === 1" (click)="cambiarPagina(-1)">Anterior</button>
+          <span class="fs--1 fw-bold">Página {{ paginaActual }} de {{ totalPaginas }}</span>
+          <button class="btn btn-sm btn-falcon-default" [disabled]="paginaActual === totalPaginas" (click)="cambiarPagina(1)">Siguiente</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL OBSERVACIONES -->
+<div class="modal fade" id="modalObservacionesAval" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title fw-bold"><i class="fas fa-exclamation-circle me-2"></i>Historial de Observaciones</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div class="border-start border-danger border-3 ps-3 py-2 mb-3 bg-white shadow-sm rounded">
+          <p class="fs--1 fw-bold text-danger mb-1"><i class="fas fa-user-shield me-1"></i>Anotación del Administrador:</p>
+          <p class="mb-0 text-900">{{ observacionesRechazo }}</p>
+        </div>
+        <p class="fs--2 text-muted mb-0"><i class="fas fa-info-circle me-1"></i>Por favor, corrija los datos solicitados en el formulario y vuelva a presionar "Actualizar Solicitud".</p>
+      </div>
+      <div class="modal-footer bg-white">
+        <button class="btn btn-secondary fw-bold shadow-none" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

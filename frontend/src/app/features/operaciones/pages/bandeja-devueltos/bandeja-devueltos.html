@@ -1,0 +1,45 @@
+<div class="card shadow-none border border-300">
+  <div class="card-header border-bottom bg-warning-subtle d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 text-uppercase fw-bolder text-warning-emphasis">
+      <i class="fas fa-undo-alt me-2"></i>Bandeja de Casos Devueltos
+    </h5>
+    <span class="badge badge-phoenix badge-phoenix-warning">{{ solicitudes.length }} Pendientes</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm fs--1 mb-0 align-middle">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-3 py-2">PROTOCOLO</th>
+            <th class="py-2">TIPO</th>
+            <th class="py-2">TITULAR / BENEFICIARIO</th>
+            <th class="py-2">MOTIVO DE DEVOLUCIÓN (ADMIN)</th>
+            <th class="text-end pe-3 py-2">ACCIÓN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let sol of solicitudes" class="hover-actions-trigger">
+            <td class="ps-3 fw-bold text-primary">{{ sol.id }}</td>
+            <td class="text-uppercase">{{ sol.tipo }}</td>
+            <td>
+              <div class="fw-bold">{{ sol.datosPaciente.titularVinculado | uppercase }}</div>
+              <div class="text-500 fs--2" *ngIf="sol.datosPaciente.parentesco !== 'TITULAR'">Carga: {{ sol.datosPaciente.nombre | uppercase }}</div>
+            </td>
+            <td class="bg-warning-light text-800" [title]="sol.observaciones || ''">
+              <i class="fas fa-exclamation-triangle me-1 text-warning"></i>
+              {{ sol.observaciones | truncateText:80 }}
+            </td>
+            <td class="text-end pe-3">
+              <button class="btn btn-sm btn-outline-warning" (click)="corregirSolicitud(sol)">
+                Corregir y Re-enviar
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="solicitudes.length === 0">
+            <td colspan="5" class="text-center py-5 text-500">Excelente, no tiene casos devueltos.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,100 @@
+<div class="card shadow-none border border-300">
+  <div class="card-header border-bottom bg-light d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 text-uppercase fw-bolder text-800">
+      <i class="fas fa-history text-secondary me-2"></i>Historial de Gestiones
+    </h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm fs--1 mb-0">
+        <thead class="bg-200 text-900">
+          <tr>
+            <th class="ps-3 py-2">ID</th>
+            <th class="py-2">FECHA</th>
+            <th class="py-2">TIPO</th>
+            <th class="py-2">PACIENTE</th>
+            <th class="py-2">ESTADO</th>
+            <th class="py-2">OBSERVACIONES / MOTIVO</th>
+            <th class="py-2 text-end pe-3">ACCIÓN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let sol of solicitudes">
+            <td class="ps-3 fw-bold text-primary align-middle">{{ sol.id }}</td>
+            <td class="align-middle">{{ sol.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="align-middle text-uppercase fw-bold">{{ sol.tipo }}</td>
+            <td class="align-middle">
+              {{ sol.datosPaciente.nombre | titlecase }} 
+              <br><small class="text-500">{{ sol.datosPaciente.cedula | cedulaFormat }}</small>
+            </td>
+            <td class="align-middle">
+              <span [class]="sol.estado | solicitudStatusColor">
+                {{ sol.estado | solicitudStatusText }}
+              </span>
+            </td>
+            <td class="align-middle bg-light-subtle">
+              <small class="text-700 italic" [title]="sol.observaciones || 'Sin observaciones'">{{ sol.observaciones ? (sol.observaciones | truncateText:50) : 'Sin observaciones' }}</small>
+            </td>
+            <td class="align-middle text-end pe-3">
+              <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalDetalleHistorial" (click)="verDetalle(sol)">
+                <i class="fas fa-eye"></i> Detalle
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="solicitudes.length === 0">
+            <td colspan="7" class="text-center py-5 text-500">No hay registros históricos aún.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Detalle del Historial -->
+<div class="modal fade" id="modalDetalleHistorial" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg" *ngIf="solicitudSeleccionada">
+      <div class="modal-header text-white" [ngClass]="getModalHeaderClass(solicitudSeleccionada.estado)">
+        <h5 class="modal-title fw-bold">
+          <i class="fas" [ngClass]="getModalHeaderIcon(solicitudSeleccionada.estado)"></i> 
+          Detalle del Trámite #{{ solicitudSeleccionada.id }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div class="row g-3">
+          <!-- Detalles Paciente -->
+          <div class="col-md-6">
+            <h6 class="text-uppercase fw-bold text-700 border-bottom pb-2 mb-3"><i class="fas fa-user-injured me-1"></i> Paciente / Beneficiario</h6>
+            <p class="mb-1 fs--1"><strong>Titular:</strong> {{ solicitudSeleccionada.datosPaciente.titularVinculado | uppercase }}</p>
+            <p class="mb-1 fs--1">
+              <strong>Paciente:</strong> <span class="text-primary fw-bold">{{ solicitudSeleccionada.datosPaciente.nombre | uppercase }}</span> 
+              <span class="badge badge-phoenix badge-phoenix-secondary ms-2 align-middle">{{ solicitudSeleccionada.datosPaciente.parentesco }}</span>
+            </p>
+            <p class="mb-1 fs--1"><strong>Cédula:</strong> {{ solicitudSeleccionada.datosPaciente.cedula | cedulaFormat:solicitudSeleccionada.datosPaciente.esCertificado }}</p>
+            <p class="mb-0 fs--1"><strong>Género / Edad:</strong> {{ solicitudSeleccionada.datosPaciente.sexoBeneficiario | genero }} / {{ solicitudSeleccionada.datosPaciente.fechaNacimientoBeneficiario | edad }}</p>
+          </div>
+
+          <!-- Detalles Solicitud -->
+          <div class="col-md-6" *ngIf="solicitudSeleccionada">
+            <h6 class="text-uppercase fw-bold text-700 border-bottom pb-2 mb-3"><i class="fas fa-file-medical-alt me-1"></i> Datos de Solicitud</h6>
+            <p class="mb-1 fs--1"><strong>Trámite:</strong> <span class="badge badge-phoenix badge-phoenix-info text-uppercase">{{ solicitudSeleccionada.tipo }}</span></p>
+            <p class="mb-1 fs--1"><strong>Fecha:</strong> {{ solicitudSeleccionada.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</p>
+            <p class="mb-0 fs--1"><strong>Estado:</strong> <span [class]="getBadgeClass(solicitudSeleccionada.estado)">{{ solicitudSeleccionada.estado }}</span></p>
+          </div>
+        </div>
+
+        <!-- Observaciones o Resolución -->
+        <div class="mt-4 border-top pt-3" *ngIf="solicitudSeleccionada.observaciones">
+          <h6 class="text-uppercase fw-bold text-700 mb-2"><i class="fas fa-comment-dots me-1"></i> Resolución u Observaciones Administrador</h6>
+          <div class="bg-white p-3 rounded border text-800 fst-italic shadow-sm">
+            {{ solicitudSeleccionada.observaciones }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-white">
+        <button class="btn btn-secondary fw-bold shadow-none" data-bs-dismiss="modal">Cerrar Detalle</button>
+      </div>
+    </div>
+  </div>
+</div>
