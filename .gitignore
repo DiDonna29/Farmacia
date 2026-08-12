@@ -1,5 +1,6 @@
-# Entornos virtuales
+# Entornos virtuales y artefactos de IA
 .venv/
+brain/
 venv/
 env/
 ENV/
