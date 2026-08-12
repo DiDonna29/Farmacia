@@ -1,0 +1,128 @@
+[
+    {
+        "cedula": 18455632,
+        "nacionalidad": "V",
+        "nombres_titular": "CARLOS EDUARDO",
+        "apellidos_titular": "MENDOZA RIVAS",
+        "sexo": "M",
+        "estado_civil": "SOLTERO (A)",
+        "correo_electronico": "carlos.mendoza.dev@gmail.com",
+        "telefono_principal": "04125556677",
+        "fecha_ingreso": "2015-03-01",
+        "dependencia": "OFICINA DE DESARROLLO INFORMÁTICO",
+        "cargo": "ANALISTA PROFESIONAL III",
+        "cargas_familiares": []
+    },
+    {
+        "cedula": 20111444,
+        "nacionalidad": "V",
+        "nombres_titular": "ADRIANA TERESA",
+        "apellidos_titular": "SUAREZ BRICEÑO",
+        "sexo": "F",
+        "estado_civil": "CASADO (A)",
+        "correo_electronico": "adrisuarez_92@hotmail.com",
+        "telefono_principal": "04241234567",
+        "dependencia": "DIRECCIÓN DE SERVICIOS ASISTENCIALES",
+        "cargo": "TECNICO II",
+        "cargas_familiares": [
+            {
+                "cedula_beneficiario": "202305041122",
+                "nombres": "SANTIAGO JOSUE",
+                "apellidos": "GARCIA SUAREZ",
+                "sexo": "M",
+                "parentesco": "HIJO (A)",
+                "posee_cedula": false
+            }
+        ]
+    },
+    {
+        "cedula": 14222333,
+        "nacionalidad": "V",
+        "nombres_titular": "RICARDO JOSE",
+        "apellidos_titular": "PERDOMO FIGUERA",
+        "sexo": "M",
+        "estado_civil": "SOLTERO (A)",
+        "correo_electronico": "rperdomo_magistratura@outlook.com",
+        "telefono_principal": "04169998877",
+        "dependencia": "DIVISIÓN DE CONTROL Y LIQUIDACIÓN",
+        "cargo": "JEFE DE DIVISIÓN",
+        "cargas_familiares": [
+            {
+                "cedula_beneficiario": "31555666",
+                "nombres": "VALENTINA",
+                "apellidos": "PERDOMO LOPEZ",
+                "sexo": "F",
+                "parentesco": "HIJO (A)",
+                "posee_cedula": true
+            },
+            {
+                "cedula_beneficiario": "202108085544",
+                "nombres": "RICARDO JUNIOR",
+                "apellidos": "PERDOMO LOPEZ",
+                "sexo": "M",
+                "parentesco": "HIJO (A)",
+                "posee_cedula": false
+            }
+        ]
+    },
+    {
+        "cedula": 22333444,
+        "nacionalidad": "V",
+        "nombres_titular": "GABRIELA ALEJANDRA",
+        "apellidos_titular": "COLMENARES PAEZ",
+        "sexo": "F",
+        "estado_civil": "SOLTERO (A)",
+        "correo_electronico": "gaby_colme@gmail.com",
+        "telefono_principal": "04120001122",
+        "cargo": "ANALISTA PROFESIONAL I",
+        "dependencia": "DIRECCIÓN DE INFRAESTRUCTURA",
+        "cargas_familiares": [
+            {
+                "cedula_beneficiario": "202401019988",
+                "nombres": "AMBAR SOFIA",
+                "apellidos": "COLMENARES",
+                "sexo": "F",
+                "parentesco": "HIJO (A)",
+                "posee_cedula": false
+            },
+            {
+                "cedula_beneficiario": "5888999",
+                "nombres": "CARMEN ROSA",
+                "apellidos": "PAEZ DE COLMENARES",
+                "sexo": "F",
+                "parentesco": "MADRE",
+                "posee_cedula": true
+            }
+        ]
+    },
+    {
+        "cedula": 10555666,
+        "nacionalidad": "V",
+        "nombres_titular": "MARIA FERNANDA",
+        "apellidos_titular": "LOPEZ GOMEZ",
+        "sexo": "F",
+        "estado_civil": "CASADO (A)",
+        "correo_electronico": "maria.lopez@gmail.com",
+        "telefono_principal": "04140000000",
+        "dependencia": "DIRECCIÓN DE FINANZAS",
+        "cargo": "ADMINISTRADOR",
+        "cargas_familiares": [
+            {
+                "cedula_beneficiario": "",
+                "nombres": "DIEGO ANDRES",
+                "apellidos": "PEREZ LOPEZ",
+                "sexo": "M",
+                "parentesco": "HIJO (A)",
+                "posee_cedula": false
+            },
+            {
+                "cedula_beneficiario": "15666777",
+                "nombres": "JOSE MIGUEL",
+                "apellidos": "PEREZ LOPEZ",
+                "sexo": "M",
+                "parentesco": "HIJO (A)",
+                "posee_cedula": true
+            }
+        ]
+    }
+]

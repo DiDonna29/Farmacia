@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @page {
+            size: letter;
+            margin: 1cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            color: #333;
+        }
+        .header {
+            width: 100%;
+            border-bottom: 2px solid #004b93;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 150px;
+        }
+        .title {
+            text-align: center;
+            font-size: 16pt;
+            font-weight: bold;
+            color: #004b93;
+            margin: 10px 0;
+        }
+        .info-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        .info-table td {
+            padding: 5px;
+            border: 1px solid #ddd;
+        }
+        .label {
+            font-weight: bold;
+            background-color: #f2f2f2;
+            width: 150px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .items-table th {
+            background-color: #004b93;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-size: 9pt;
+        }
+        .items-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            font-size: 9pt;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .footer-signatures {
+            width: 100%;
+            margin-top: 50px;
+        }
+        .signature-box {
+            width: 23%;
+            border-top: 1px solid #000;
+            text-align: center;
+            padding-top: 5px;
+            font-size: 8pt;
+            display: inline-block;
+            vertical-align: top;
+            margin: 0 1%;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 30%;">
+                    {% if logo_path %}
+                        <img src="{{ logo_path }}" class="logo">
+                    {% else %}
+                        <h2 style="color: #004b93; margin: 0;">DEM</h2>
+                    {% endif %}
+                </td>
+                <td style="width: 40%; text-align: center;">
+                    <div style="font-size: 8pt; color: #666;">
+                        REPÚBLICA BOLIVARIANA DE VENEZUELA<br>
+                        DIRECCIÓN EJECUTIVA DE LA MAGISTRATURA<br>
+                        DIRECCIÓN DE SERVICIOS MÉDICOS
+                    </div>
+                </td>
+                <td style="width: 30%; text-align: right;">
+                    <div style="font-weight: bold; color: #d32f2f;">FOLIO: {{ folio }}</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="title">SOLICITUD Y ENTREGA DE MATERIALES</div>
+
+    <table class="info-table">
+        <tr>
+            <td class="label">DE:</td>
+            <td>{{ origen }}</td>
+            <td class="label">FECHA SOLICITUD:</td>
+            <td>{{ fecha_solicitud|date:"d/m/Y H:i" }}</td>
+        </tr>
+        <tr>
+            <td class="label">PARA:</td>
+            <td>{{ destino }}</td>
+            <td class="label">FECHA ENTREGA:</td>
+            <td>{{ fecha_entrega|date:"d/m/Y H:i"|default:"PENDIENTE" }}</td>
+        </tr>
+        <tr>
+            <td class="label">SOLICITANTE:</td>
+            <td colspan="3">{{ solicitante_nombre }} (C.I. {{ solicitante_ci }})</td>
+        </tr>
+        {% if observaciones %}
+        <tr>
+            <td class="label">OBSERVACIONES:</td>
+            <td colspan="3">{{ observaciones }}</td>
+        </tr>
+        {% endif %}
+    </table>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 5%;">ITEM</th>
+                <th style="width: 15%;" class="text-center">CANT. SOLICITADA</th>
+                <th style="width: 15%;" class="text-center">CANT. ENTREGADA</th>
+                <th style="width: 15%;">PRESENTACIÓN</th>
+                <th style="width: 50%;">DESCRIPCIÓN DETALLADA DEL MATERIAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td class="text-center">{{ forloop.counter }}</td>
+                <td class="text-center">{{ item.cantidad_solicitada }}</td>
+                <td class="text-center">{{ item.cantidad_entregada|default:"0" }}</td>
+                <td>{{ item.nombre_presentacion }}</td>
+                <td>{{ item.nombre_generico }}</td>
+            </tr>
+            {% endfor %}
+            <tr style="background-color: #f9f9f9; font-weight: bold;">
+                <td colspan="1" class="text-right">TOTAL:</td>
+                <td class="text-center">{{ total_solicitado }}</td>
+                <td class="text-center">{{ total_entregado }}</td>
+                <td colspan="2"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer-signatures">
+        <table style="width: 100%;">
+            <tr>
+                <td class="signature-box" style="border: none;">
+                    <div style="border-top: 1px solid black; padding-top: 5px;">
+                        FIRMA Y SELLO DEL<br>SOLICITANTE
+                    </div>
+                </td>
+                <td class="signature-box" style="border: none;">
+                    <div style="border-top: 1px solid black; padding-top: 5px;">
+                        AUTORIZADO POR:<br>COORDINACIÓN DE ADM.
+                    </div>
+                </td>
+                <td class="signature-box" style="border: none;">
+                    <div style="border-top: 1px solid black; padding-top: 5px;">
+                        ENTREGADO POR:<br>&nbsp;
+                    </div>
+                </td>
+                <td class="signature-box" style="border: none;">
+                    <div style="border-top: 1px solid black; padding-top: 5px;">
+                        FIRMA Y SELLO DEL<br>RECEPTOR
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="margin-top: 30px; font-size: 8pt; color: #999; text-align: center;">
+        Documento generado automáticamente. Sistema de Inventario de Farmacia (SIFARMA) — Dirección Ejecutiva de la Magistratura.
+    </div>
+</body>
+</html>

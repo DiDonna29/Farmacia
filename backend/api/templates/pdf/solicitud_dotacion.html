@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Solicitud y Entrega de Materiales #{{ cab.folio_solicitud }}</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 1cm;
+            @frame footer {
+                -pdf-frame-content: footer_content;
+                bottom: 1cm;
+                height: 1cm;
+                width: 100%;
+            }
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #000;
+            line-height: 1.1;
+            font-size: 8pt;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+        }
+        /* Header Box */
+        .header-table {
+            width: 100%;
+            margin-bottom: 5px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+        }
+        .inst-sub {
+            font-size: 7pt;
+            text-transform: uppercase;
+            font-weight: bold;
+            line-height: 1.2;
+            margin-top: 5px;
+        }
+        .main-title {
+            text-align: right;
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding-top: 15px;
+        }
+        
+        /* Info Area */
+        .info-table {
+            width: 100%;
+            margin-bottom: 5px;
+            font-size: 9pt;
+        }
+        .info-td {
+            padding: 3px 0;
+        }
+
+        /* Bordered Area */
+        .border-wrapper {
+            border: 1px solid #000;
+            width: 100%;
+        }
+
+        /* Products Table */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .items-table th {
+            border: 1px solid #000;
+            border-top: none;
+            text-align: center;
+            padding: 4px;
+            font-size: 7pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            background-color: #f8f9fa;
+        }
+        .items-table td {
+            border: 1px solid #000;
+            padding: 4px;
+            font-size: 8pt;
+            text-align: center;
+        }
+        .items-table td.desc-col {
+            text-align: left;
+            padding-left: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Signatures */
+        .signatures-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: none;
+            margin-top: 0;
+        }
+        .signatures-table td {
+            border: 1px solid #000;
+            border-top: none;
+            height: 60px;
+            vertical-align: top;
+            padding: 5px;
+            font-size: 7pt;
+            font-weight: bold;
+            text-align: center;
+            width: 25%;
+        }
+        .watermark-img {
+            position: absolute;
+            bottom: -20px;
+            right: 0px;
+            opacity: 0.15;
+            width: 250px;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container border-wrapper">
+        <!-- Header -->
+        <table class="header-table" style="border:none; margin: 5px;">
+            <tr>
+                <td width="55%" style="vertical-align: top;">
+                    {% if logo_base64 %}
+                        <img src="data:image/png;base64,{{ logo_base64 }}" style="height: 50px; display: inline-block;">
+                    {% elif logo_path %}
+                        <img src="{{ logo_path }}" style="height: 50px; display: inline-block;">
+                    {% endif %}
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {% if logo_base64_SIFARMA %}
+                        <img src="data:image/png;base64,{{ logo_base64_SIFARMA }}" style="height: 50px; display: inline-block;">
+                    {% elif logo_path_SIFARMA %}
+                        <img src="{{ logo_path_SIFARMA }}" style="height: 50px; display: inline-block;">
+                    {% endif %}
+                    <div class="inst-sub">
+                        REPÚBLICA BOLIVARIANA DE VENEZUELA<br>
+                        DIRECCIÓN EJECUTIVA DE LA MAGISTRATURA<br>
+                        DIRECCIÓN DE SERVICIOS MÉDICOS
+                    </div>
+                </td>
+                <td width="45%" style="vertical-align: top;">
+                    <div class="main-title">SOLICITUD Y ENTREGA DE MATERIALES</div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Header Info -->
+        <table class="info-table" style="margin: 5px;">
+            <tr>
+                <td width="50%" class="info-td">
+                    <b>DE: DIRECCIÓN DE SERVICIOS MÉDICOS</b>
+                </td>
+                <td width="25%" class="info-td">
+                    <b>FECHA DE SOLICITUD:</b>
+                </td>
+                <td width="25%" class="info-td">
+                    {{ cab.fecha_solicitud|date:"d/m/Y" }}
+                </td>
+            </tr>
+            <tr>
+                <td class="info-td">
+                    <b>UNIDAD SOLICITANTE: {{ cab.origen }}</b>
+                </td>
+                <td class="info-td">
+                    <b>FECHA DE ENTREGA:</b>
+                </td>
+                <td class="info-td">
+                    {% if cab.fecha_entrega %}{{ cab.fecha_entrega|date:"d/m/Y" }}{% else %}---{% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="info-td">
+                    <b>PARA: {{ cab.destino }}</b>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="info-td">
+                    <b>FOLIO:</b> {{ cab.folio_solicitud }}
+                </td>
+                <td class="info-td">
+                    <b>ESTADO:</b> {{ cab.estado }}
+                </td>
+            </tr>
+        </table>
+
+        <!-- Products Table -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th width="5%" style="border-left: none;">ITEM</th>
+                    <th width="10%">CANTIDAD SOLICITADA</th>
+                    <th width="10%">CANTIDAD ENTREGADA</th>
+                    <th width="15%">PRESENTACIÓN</th>
+                    <th width="25%">NOMBRE MEDICAMENTO</th>
+                    <th width="35%" style="border-right: none;">PRINCIPIOS ACTIVOS/COMPONENTES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in detalles %}
+                <tr>
+                    <td style="border-left: none;">{{ forloop.counter }}</td>
+                    <td>{{ item.cantidad_solicitada }}</td>
+                    <td>
+                        {% if cab.estado == 'PENDIENTE' %}
+                            ---
+                        {% else %}
+                            {{ item.cantidad_entregada }}
+                        {% endif %}
+                    </td>
+                    <td>{{ item.nombre_presentacion }}</td>
+                    <td class="desc-col">{{ item.nombre_generico }}</td>
+                    <td class="desc-col" style="border-right: none; font-size: 7pt; font-weight: normal;">{{ item.componentes_text }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Observaciones / Motivo de Rechazo -->
+        {% if cab.observaciones %}
+        <table style="width: 100%; border-collapse: collapse; border-top: none;">
+            <tr>
+                <td style="border: 1px solid #000; border-top: none; border-left: none; border-right: none; padding: 6px; text-align: left; background-color: #f9f9f9; font-size: 8pt;">
+                    <b>OBSERVACIONES / DETALLES:</b>
+                    <div style="white-space: pre-line; margin-top: 3px; font-size: 8pt; line-height: 1.2;">{{ cab.observaciones }}</div>
+                </td>
+            </tr>
+        </table>
+        {% endif %}
+
+        <!-- Signatures -->
+        <table class="signatures-table">
+            <tr>
+                <td style="border-left: none;">
+                    FIRMA Y SELLO DEL<br>SOLICITANTE
+                </td>
+                <td>
+                    AUTORIZADO POR:<br>COORDINACIÓN DE<br>ADMINISTRACIÓN
+                </td>
+                <td>
+                    ENTREGADO POR:
+                </td>
+                <td style="border-right: none;">
+                    FIRMA Y SELLO DEL RECEPTOR
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="footer_content" style="text-align: center; font-size: 7pt; color: #555; border-top: 1px solid #ccc; padding-top: 5px; width: 100%;">
+        Documento generado automáticamente. Sistema de Inventario de Farmacia (SIFARMA) — Dirección Ejecutiva de la Magistratura.
+    </div>
+</body>
+</html>
+

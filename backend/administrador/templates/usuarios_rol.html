@@ -1,0 +1,323 @@
+{% extends 'template.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content pt-0"> 
+    <div class="row align-items-center justify-content-between g-3 mb-4">
+        <div class="col-12 col-md-auto">
+            <h2 class="mb-0">Gestión de Usuarios</h2>
+        </div>
+    </div>
+
+    <div class="card shadow-none border border-300 mb-5">
+        <div class="card-header border-bottom border-300 bg-soft">
+            <h5 class="mb-0 text-900">Registrar Nuevo Trabajador</h5>
+        </div>
+        <div class="card-body">
+            <form id="form-registro-usuario" method="POST" action="{% url 'guardar_usuario' %}" class="row g-3">
+                {% csrf_token %}
+                
+                <div class="col-sm-6 col-md-4">
+                    <label class="form-label fw-bold">Cédula</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                        <input class="form-control" name="cedula" id="reg_cedula" type="number" placeholder="Cédula" required>
+                        <button class="btn btn-phoenix-primary" type="button" id="btn-buscar-cedula">
+                            <i class="fas fa-search" id="icon-buscar"></i>
+                            <span class="spinner-border spinner-border-sm d-none" id="spinner-buscar" role="status"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-4">
+                    <label class="form-label fw-bold">Nombres</label>
+                    <input class="form-control bg-light" name="nombres" id="reg_nombres" type="text" placeholder="Autocompletado..." readonly required>
+                </div>
+
+                <div class="col-sm-6 col-md-4">
+                    <label class="form-label fw-bold">Apellidos</label>
+                    <input class="form-control bg-light" name="apellidos" id="reg_apellidos" type="text" placeholder="Autocompletado..." readonly required>
+                </div>
+
+                <div class="col-sm-6 col-md-4">
+                    <label class="form-label fw-bold">Rol Asignado</label>
+                    <select class="form-select" name="id_rol" required>
+                        <option value="">Seleccionar rol...</option>
+                        {% for rol in roles %}
+                            <option value="{{ rol.id }}">{{ rol.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-sm-6 col-md-4">
+                    <label class="form-label fw-bold">Contraseña Inicial</label>
+                    <div class="input-group">
+                        <input class="form-control" name="password" type="password" placeholder="********" required>
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-4 align-self-end">
+                    <button class="btn btn-primary w-100" type="submit">
+                        <span class="fas fa-user-plus me-2"></span>Registrar Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-none border border-300">
+        <div class="card-header border-bottom border-300 bg-soft">
+            <h5 class="mb-0 text-900">Listado de Usuarios Registrados</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive scrollbar">
+                <table class="table table-sm fs--1 mb-0">
+                    <thead>
+                        <tr>
+                            <th class="white-space-nowrap align-middle">CÉDULA</th>
+                            <th class="white-space-nowrap align-middle">NOMBRE COMPLETO</th>
+                            <th class="white-space-nowrap align-middle">ROL</th>
+                            <th class="white-space-nowrap align-middle">ESTADO</th>
+                            <th class="white-space-nowrap align-middle text-end">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list">
+                        {% for u in usuarios %}
+                        <tr>
+                            <td class="align-middle fw-semi-bold">{{ u.username }}</td>
+                            <td class="align-middle">{{ u.first_name }} {{ u.last_name }}</td>
+                            <td class="align-middle">{{ u.rol_nombre }}</td>
+                            <td class="align-middle">
+                                <span class="badge badge-phoenix badge-phoenix-{% if u.is_active %}success{% else %}danger{% endif %}">
+                                    {% if u.is_active %}Activo{% else %}Inactivo{% endif %}
+                                </span>
+                            </td>
+                            <td class="align-middle text-end">
+                                <button class="btn btn-sm btn-phoenix-primary me-1" 
+                                        onclick="abrirEditor('{{ u.id }}', '{{ u.username }}', '{{ u.first_name }}', '{{ u.last_name }}', '{{ u.id_rol }}', '{{ request.user.id }}')"
+                                        title="Modificar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                {% url "estado_usuario" u.id as url_estado %}
+                                <button type="button" onclick="confirmarEstado('{{ url_estado|escapejs }}', '{{ u.is_active|escapejs }}', '{{ u.id }}', '{{ request.user.id }}')" class="btn btn-sm {% if u.is_active %}btn-phoenix-danger{% else %}btn-phoenix-success{% endif %}" title="Cambiar Estado">
+                                    <i class="fas {% if u.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">MODIFICAR DATOS DE USUARIO</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="form-editar-usuario" method="POST" action="{% url 'editar_usuario' %}">
+                {% csrf_token %}
+                <div class="modal-body row g-3">
+                    <input type="hidden" name="user_id" id="edit_user_id">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">CÉDULA</label>
+                        <input class="form-control" id="edit_cedula" type="number" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">NOMBRES</label>
+                        <input class="form-control" name="nombres" id="edit_nombres" type="text" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">APELLIDOS</label>
+                        <input class="form-control" name="apellidos" id="edit_apellidos" type="text" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">ROL ASIGNADO</label>
+                        <select class="form-select" name="id_rol" id="edit_rol" required>
+                            {% for rol in roles %}
+                                <option value="{{ rol.id }}">{{ rol.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-danger">NUEVA CONTRASEÑA (OPCIONAL)</label>
+                        <input class="form-control" name="password" type="password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">CANCELAR</button>
+                    <button class="btn btn-primary" type="submit">ACTUALIZAR DATOS</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="django-messages" style="display: none;">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="django-message" data-tags="{{ message.tags|escapejs }}" data-text="{{ message|escapejs }}"></div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<script>
+let cedulaValidada = false;
+
+// 1. BÚSQUEDA DE CÉDULA (WebService + Local)
+document.getElementById('btn-buscar-cedula').addEventListener('click', async function() {
+    const inputCedula = document.getElementById('reg_cedula');
+    const cedula = inputCedula.value;
+    const btn = this;
+    const icon = document.getElementById('icon-buscar');
+    const spinner = document.getElementById('spinner-buscar');
+    const inputNombres = document.getElementById('reg_nombres');
+    const inputApellidos = document.getElementById('reg_apellidos');
+
+    if (!cedula) {
+        Swal.fire({ icon: 'warning', title: 'ATENCIÓN', text: 'POR FAVOR INGRESE UNA CÉDULA.' });
+        return;
+    }
+
+    btn.disabled = true;
+    icon.classList.add('d-none');
+    spinner.classList.remove('d-none');
+    cedulaValidada = false;
+
+    try {
+        const checkLocal = await fetch(`/verificar-cedula/${cedula}/`);
+        const dataLocal = await checkLocal.json();
+
+        if (dataLocal.existe) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'USUARIO YA REGISTRADO',
+                text: 'ESTA CÉDULA YA TIENE UNA CUENTA EN ESTE SISTEMA.',
+                confirmButtonColor: '#3085d6'
+            });
+            inputNombres.value = '';
+            inputApellidos.value = '';
+            return;
+        }
+
+        const response = await fetch(`http://172.26.97.190:8010/api/empleado/${cedula}`);
+        if (!response.ok) throw new Error('No encontrado');
+        
+        const dataExt = await response.json();
+        inputNombres.value = `${dataExt.primer_nombre} ${dataExt.segundo_nombre || ''}`.trim();
+        inputApellidos.value = `${dataExt.primer_apellido} ${dataExt.segundo_apellido || ''}`.trim();
+        cedulaValidada = true;
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'PERSONAL VERIFICADO',
+            text: `${dataExt.cargo} - DISPONIBLE PARA REGISTRO`,
+            timer: 2500,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
+        });
+
+    } catch (error) {
+        inputNombres.value = '';
+        inputApellidos.value = '';
+        cedulaValidada = false;
+        Swal.fire({
+            icon: 'error',
+            title: 'SIN RESULTADOS',
+            text: 'LA CÉDULA NO EXISTE EN EL SISTEMA DE RECURSOS HUMANOS.',
+        });
+    } finally {
+        btn.disabled = false;
+        icon.classList.remove('d-none');
+        spinner.classList.add('d-none');
+    }
+});
+
+// 2. VALIDACIÓN ANTES DE ENVIAR FORMULARIO
+document.getElementById('form-registro-usuario').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!cedulaValidada) {
+        Swal.fire({ 
+            icon: 'error', 
+            title: 'VERIFICACIÓN OBLIGATORIA', 
+            text: 'DEBE VALIDAR LA CÉDULA CON EL BOTÓN DE BÚSQUEDA ANTES DE REGISTRAR.' 
+        });
+        return;
+    }
+    this.submit();
+});
+
+// 3. ABRIR MODAL DE EDICIÓN
+function abrirEditor(id, cedula, nombres, apellidos, id_rol, currentUserId) {
+    if (id === currentUserId) {
+        Swal.fire({ icon: 'warning', title: 'SEGURIDAD', text: 'PARA EDITAR SU PERFIL USE LA OPCIÓN "MI PERFIL".' });
+        return;
+    }
+    document.getElementById('edit_user_id').value = id;
+    document.getElementById('edit_cedula').value = cedula;
+    document.getElementById('edit_nombres').value = nombres;
+    document.getElementById('edit_apellidos').value = apellidos;
+    document.getElementById('edit_rol').value = id_rol;
+    new bootstrap.Modal(document.getElementById('modalEditarUsuario')).show();
+}
+
+// 4. CAMBIO DE ESTADO (ACTIVAR/DESACTIVAR)
+function confirmarEstado(url, activo, id, currentUserId) {
+    if (id === currentUserId && activo === 'True') {
+        Swal.fire({ icon: 'error', title: 'BLOQUEADO', text: 'NO PUEDE DESACTIVAR SU PROPIA CUENTA.' });
+        return;
+    }
+    const accion = activo === 'True' ? 'DESACTIVAR' : 'HABILITAR';
+    Swal.fire({
+        title: `¿${accion} ACCESO?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: activo === 'True' ? '#d33' : '#28a745',
+        confirmButtonText: `SÍ, ${accion}`,
+        cancelButtonText: 'CANCELAR'
+    }).then((result) => { if (result.isConfirmed) window.location.href = url; });
+}
+
+// 5. ÚNICO MANEJADOR DE ALERTAS DJANGO (CORREGIDO)
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.django-message').forEach(el => {
+        const tags = el.dataset.tags;
+        const text = el.dataset.text;
+        
+        let icon = 'info';
+        let title = 'AVISO DEL SISTEMA';
+        let confirmColor = '#3085d6';
+
+        if (tags.includes('success')) {
+            icon = 'success';
+            title = '¡OPERACIÓN EXITOSA!';
+            confirmColor = '#28a745';
+        } else if (tags.includes('error')) {
+            icon = 'error';
+            title = 'ERROR EN LA OPERACIÓN';
+            confirmColor = '#d33';
+        } else if (tags.includes('warning')) {
+            icon = 'warning';
+            title = 'ADVERTENCIA';
+            confirmColor = '#f89406';
+        }
+
+        Swal.fire({
+            icon: icon,
+            title: title,
+            text: text.toUpperCase(),
+            confirmButtonColor: confirmColor,
+            confirmButtonText: 'ENTENDIDO',
+            showClass: { popup: 'animate__animated animate__fadeInDown' },
+            hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Comprobante de Despacho #{{ folio }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #334155;
+            line-height: 1.1;
+            font-size: 9pt;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+        }
+        /* Header Style - More sober */
+        .header-table {
+            width: 100%;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+        .inst-title {
+            font-size: 16pt;
+            font-weight: 900;
+            color: #1e293b;
+            text-transform: uppercase;
+            margin: 0;
+        }
+        .inst-sub {
+            font-size: 8pt;
+            font-weight: bold;
+            color: #64748b;
+            margin-top: 2px;
+        }
+        .folio-box {
+            text-align: right;
+        }
+        .folio-label {
+            font-size: 7pt;
+            font-weight: 900;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+        .folio-value {
+            font-size: 14pt;
+            font-weight: 900;
+            color: #334155; /* Neutral Dark Gray instead of Blue */
+        }
+
+        /* Information Sections - White Background */
+        .info-table {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .info-card {
+            background-color: #ffffff;
+            padding: 4px 0px;
+        }
+        .section-title {
+            font-size: 7pt;
+            font-weight: 900;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .data-name {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 1px;
+        }
+        .data-detail {
+            font-size: 8pt;
+            color: #475569;
+        }
+
+        .soft-divider {
+            border-top: 1px solid #cbd5e1;
+            margin-top: 8px; 
+            padding-top: 6px;
+        }
+
+        .dashed-line {
+            border-top: 1px dashed #94a3b8;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        /* Divider Ray */
+        .divider-ray {
+            border-bottom: 1px solid #cbd5e1;
+            margin: 5px 0 10px 0;
+            width: 100%;
+        }
+
+        /* Products Table */
+        .items-header {
+            font-size: 8pt;
+            font-weight: 900;
+            color: #475569;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .items-table th {
+            background-color: #334155; /* Sober Dark Gray */
+            color: #ffffff;
+            text-align: left;
+            padding: 4px 6px;
+            font-size: 8pt;
+            text-transform: uppercase;
+        }
+        .items-table td {
+            padding: 4px 6px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .item-text {
+            font-weight: bold;
+            font-size: 9pt;
+            color: #1e293b;
+        }
+        .item-sub {
+            font-size: 7pt;
+            color: #64748b;
+        }
+        .item-qty {
+            font-size: 11pt;
+            font-weight: 900;
+            color: #1e293b;
+            text-align: center;
+        }
+
+        /* Summary Area */
+        .summary-section {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .total-box {
+            background-color: #334155;
+            color: #ffffff;
+            padding: 6px 10px;
+            text-align: right;
+            border-radius: 4px;
+        }
+        .total-label {
+            font-size: 8pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-right: 15px;
+        }
+        .total-value {
+            font-size: 14pt;
+            font-weight: 900;
+        }
+
+        .notes-box {
+            border-left: 3px solid #64748b;
+            background-color: #f8fafc;
+            padding: 6px 10px;
+            font-size: 8pt;
+            color: #475569;
+        }
+
+        /* Footer */
+        .footer-note {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 7pt;
+            color: #94a3b8;
+            border-top: 1px dashed #e2e8f0;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <table class="header-table">
+            <tr>
+                <td width="70%">
+                    {% if logo_base64 %}
+                    <img src="data:image/png;base64,{{ logo_base64 }}" width="150" style="margin-bottom: 5px;">
+                    {% elif logo_path %}
+                    <img src="{{ logo_path }}" width="150" style="margin-bottom: 5px;">
+                    {% else %}
+                    <div class="inst-title">Farmacia - DEM</div>
+                    {% endif %}
+                    <div style="font-size: 20pt; margin-top: 5px; font-weight: bold; color: #1e293b;">NOTA DE ENTREGA</div>
+                </td>
+                <td width="30%" class="folio-box">
+                    {% if logo_base64_SIFARMA %}
+                    <img src="data:image/png;base64,{{ logo_base64_SIFARMA }}" width="150" style="margin-bottom: 5px; float: right;">
+                    <div style="clear: both;"></div>
+                    {% elif logo_path_SIFARMA %}
+                    <img src="{{ logo_path_SIFARMA }}" width="150" style="margin-bottom: 5px; float: right;">
+                    <div style="clear: both;"></div>
+                    {% endif %}
+                    <div class="folio-value" style="margin-top: 5px;">#{{ folio }}</div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Info Grid -->
+        <table class="info-table">
+            <tr>
+                <td width="49%" style="padding-right: 1%; vertical-align: top;">
+                    <div class="info-card">
+                        <div class="section-title">Titular</div>
+                        <div class="data-name">{{ titular_nombre }}</div>
+                        <div class="data-detail">C.I: {{ titular_ci }}</div>
+                        <div class="data-detail">DEP: {{ titular_dep }}</div>
+                        <div class="data-detail">CARGO: {{ titular_cargo }}</div>
+                        <div class="data-detail">CONTACTO: {{ beneficiario_email|default:"N/A" }}</div>
+                    </div>
+                    
+                    <p style="color: #64748b; margin: 2px 0; font-size: 10pt; letter-spacing: 1px; font-weight: bold; overflow: hidden; white-space: nowrap;">_______________________________________</p>
+                    
+                    <div class="info-card">
+                        <div class="section-title">Beneficiario (Receptor del Insumo)</div>
+                        {% if beneficiario_parentesco == 'TITULAR' %}
+                        <div class="data-name" style="color: #64748b; font-size: 8pt; margin-top: 4px; font-weight: normal;">El usuario beneficiario final es el mismo titular.</div>
+                        {% else %}
+                        <div class="data-name">{{ beneficiario_nombre }}</div>
+                        <div class="data-detail">VÍNCULO: {{ beneficiario_parentesco }}</div>
+                        {% endif %}
+                    </div>
+                </td>
+                <td width="49%" style="padding-left: 1%; vertical-align: top;">
+                    <div class="info-card">
+                        <div class="section-title">Responsable de Entrega (Farmacia)</div>
+                        <div class="data-name">{{ farmaceuta_nombre }}</div>
+                        <div class="data-detail">Departamento: Farmacia Central DEM</div>
+                    </div>
+                    
+                    {% if medico_tratante %}
+                    <div class="info-card" style="margin-top: 10px;">
+                        <div class="section-title">Médico Tratante / Especialidad</div>
+                        <div class="data-name">{{ medico_tratante }}</div>
+                        <div class="data-detail">{{ especialidad|default:"GENERAL" }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="info-card" style="margin-top: 10px;">
+                        <div class="section-title">Fecha del Despacho</div>
+                        <div class="data-name">{{ fecha|date:"d/m/Y" }}</div>
+                        <div class="data-detail">HORA: {{ fecha|date:"H:i:s" }}</div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Divider Line between Actors and Items -->
+        <div class="divider-ray"></div>
+
+        <!-- Products Table -->
+        <div class="items-header">Detalle de Insumos Entregados</div>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th width="85%">Descripción del Medicamento / Lote</th>
+                    <th width="15%" style="text-align: center;">Cant.</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>
+                        <div class="item-text">{{ item.nombre_generico }}</div>
+                        
+                        <div class="item-sub" style="margin-bottom: 2px;">
+                            {% if item.componentes_json %}
+                                {% for comp in item.componentes_json %}
+                                    {{ comp.nombre_principio }} {% if comp.concentracion_valor %}{{ comp.concentracion_valor }}{% endif %} {% if comp.nombre_unidad %}{{ comp.nombre_unidad }}{% endif %}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span style="color: #f59e0b;">Sin principios activos</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="item-sub">LOTE: {{ item.numero_lote }} | PRESENTACIÓN: {{ item.nombre_presentacion }}</div>
+                    </td>
+                    <td class="item-qty">{{ item.cantidad_despachada }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Summary -->
+        <table class="summary-section">
+            <tr>
+                <td width="60%">
+                    {% if observaciones %}
+                    <div class="notes-box">
+                        <strong>OBSERVACIONES:</strong> {{ observaciones }}
+                    </div>
+                    {% endif %}
+                </td>
+                <td width="40%" style="padding-left: 20px; vertical-align: top;">
+                    <div class="total-box">
+                        <span class="total-label">Unidades Totales</span>
+                        <span class="total-value">{{ total_unidades }}</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Signatures removed for digital record -->
+        <!-- 
+        <table class="signature-table">
+          ...
+        </table>
+        -->
+
+        <!-- Footer -->
+        <div class="footer-note">
+            Documento generado automáticamente. Sistema de Inventario de Farmacia (SIFARMA) — Dirección Ejecutiva de la Magistratura.
+        </div>
+    </div>
+</body>
+</html>
+
