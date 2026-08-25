@@ -12,7 +12,42 @@ import { evaluatePassword, PasswordRulesState, passwordStrengthValidator } from 
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   providers: [DatePipe],
+  styles: [`
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .anim-fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-up {
+      opacity: 0;
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-scale-up {
+      opacity: 0;
+      animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-right {
+      opacity: 0;
+      animation: slideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+`],
   template: `
+    <div class="anim-fade-in">
     <!-- Spinner de carga inicial -->
     <div class="d-flex flex-center py-6" *ngIf="isLoading">
         <div class="spinner-border text-primary" role="status"></div>
@@ -22,7 +57,7 @@ import { evaluatePassword, PasswordRulesState, passwordStrengthValidator } from 
     <div class="row g-4" *ngIf="!isLoading && profileData">
       
       <!-- Lado Izquierdo: Resumen -->
-      <div class="col-12 col-xl-4">
+      <div class="col-12 col-xl-4 anim-slide-up">
         <div class="card h-100 border border-300 shadow-sm">
           <div class="card-body text-center d-flex flex-column justify-content-center p-5">
             <div class="avatar avatar-5xl d-flex align-items-center justify-content-center rounded-circle mx-auto mb-4 fw-bolder fs-5 text-white shadow-lg"
@@ -47,9 +82,9 @@ import { evaluatePassword, PasswordRulesState, passwordStrengthValidator } from 
           </div>
         </div>
       </div>
-
+ 
       <!-- Lado Derecho: Edición -->
-      <div class="col-12 col-xl-8">
+      <div class="col-12 col-xl-8 anim-slide-up delay-100">
         <div class="row g-4">
             
             <!-- Bloque de Contacto (Inputs Divididos) -->
@@ -236,77 +271,9 @@ import { evaluatePassword, PasswordRulesState, passwordStrengthValidator } from 
       </div>
 
     </div>
-  `,
-  styles: [`
-    .input-group-text { background: var(--phoenix-gray-100); }
-    .text-success-custom {
-      color: #25a174 !important;
-      font-weight: 500;
-    }
-    .text-muted-custom {
-      color: #748194 !important;
-    }
-
-    .password-check-icon {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      margin-right: 6px;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: contain;
-      vertical-align: middle;
-      flex-shrink: 0;
-    }
-    .password-check-icon.valid {
-      background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiMyNWExNzQiLz48cG9seWxpbmUgcG9pbnRzPSIxNiA5IDExIDE0IDggMTEiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=");
-    }
-    .password-check-icon.invalid {
-      background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiNkYzM1NDUiLz48bGluZSB4MT0iMTUiIHkxPSI5IiB4Mj0iOSIgeTI9IjE1IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGxpbmUgeDE9IjkiIHkxPSI5IiB4Mj0iMTUiIHkyPSIxNSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==");
-    }
-
-    .password-eye-icon {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: contain;
-      vertical-align: middle;
-    }
-    .password-eye-icon.visible {
-      background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmM3NTdkIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE3Ljk0IDE3Ljk0QTEwLjA3IDEwLjA3IDAgMCAxIDEyIDIwYy03IDAtMTEtOC0xMS04YTE4LjQ1IDE4LjQ1IDAgMCAxIDUuMDYtNS45NE05LjkgNC4yNEE5LjEyIDkuMTIgMCAwIDEgMTIgNGM3IDAgMTEgOCAxMSA4YTE4LjUgMTguNSAwIDAgMS0yLjE2IDMuMTltLTYuNzItMS4wN2EzIDMgMCAxIDEtNC4yNC00LjI0Ii8+PGxpbmUgeDE9IjEiIHkxPSIxIiB4Mj0iMjMiIHkyPSIyMyIvPjwvc3ZnPg==");
-    }
-    .password-eye-icon:not(.visible) {
-      background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmM3NTdkIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEgMTJzNC04IDExLTggMTEgOCAxMSA4LTQgOC0xMSA4LTExLTgtMTEtOHoiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIzIi8+PC9zdmc+");
-    }
-    .dark .password-eye-icon.visible,
-    [data-bs-theme="dark"] .password-eye-icon.visible {
-      background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNSkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTcuOTQgMTcuOTRBMTAuMDcgMTAuMDcgMCAwIDEgMTIgMjBjLTcgMC0xMS04LTExLThhMTguNDUgMTguNDUgMCAwIDEgNS4wNi01Ljk0TTkuOSA0LjI0QTkuMTIgOS4xMiAwIDAgMSAxMiA0YzcgMCAxMSA4IDExIDhhMTguNSAxOC41IDAgMCAxLTIuMTYgMy4xOW0tNi43Mi0xLjA3YTMgMyAwIDEgMS00LjI0LTQuMjQiLz48bGluZSB4MT0iMSIgeTE9IjEiIHgyPSIyMyIgeTI9IjIzIi8+PC9zdmc+");
-    }
-    .dark .password-eye-icon:not(.visible),
-    [data-bs-theme="dark"] .password-eye-icon:not(.visible) {
-      background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNSkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMSAxMnM0LTggMTEtOCAxMSA4IDExIDgtNCA4LTExIDgtMTEtOC0xMS04eiIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjMiLz48L3N2Zz4=");
-    }
-    /* Dark mode checklist */
-    .bg-dark-checklist {
-      background-color: rgba(255,255,255,0.05) !important;
-    }
-    .dark .checklist-title,
-    [data-bs-theme="dark"] .checklist-title {
-      color: #ffffff !important;
-    }
-    .checklist-title {
-      color: #c12d2dff !important;
-    }
-    .dark .checklist-label:not(.text-success),
-    [data-bs-theme="dark"] .checklist-label:not(.text-success) {
-      color: #ffffff !important;
-    }
-    .checklist-label:not(.text-success) {
-      color: #6c757d;
-    }
-  `]
+  
+    </div>
+  `
 })
 export class ProfileComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);

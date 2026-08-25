@@ -17,7 +17,42 @@ import { AuthService } from '../../core/services/auth.service';
   selector: 'app-dotacion',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, SoloNumerosDirective, UppercaseDirective, RouterLink],
+  styles: [`
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .anim-fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-up {
+      opacity: 0;
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-scale-up {
+      opacity: 0;
+      animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-right {
+      opacity: 0;
+      animation: slideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+`],
   template: `
+    <div class="anim-fade-in">
     <div class="mb-5">
       <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
         <div>
@@ -42,7 +77,7 @@ import { AuthService } from '../../core/services/auth.service';
     <div class="row g-3 align-items-start">
       <!-- Columna Izquierda: Formulario -->
       <div class="col-12 col-xxl-4">
-        <div class="card shadow-none border border-300">
+        <div class="card shadow-none border border-300 anim-scale-up" style="animation-delay: 150ms">
           <div class="card-header border-bottom border-300 bg-body-tertiary py-3">
             <h4 class="mb-0 text-900"><span class="fas fa-plus-circle me-2 text-success"></span>Nuevo Lote</h4>
           </div>
@@ -127,7 +162,7 @@ import { AuthService } from '../../core/services/auth.service';
 
       <!-- Columna Derecha: Últimos registros -->
       <div class="col-12 col-xxl-8">
-        <div class="card shadow-none border border-300">
+        <div class="card shadow-none border border-300 anim-scale-up" style="animation-delay: 150ms">
           <div class="card-header border-bottom border-300 py-3">
             <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3">
               <h4 class="mb-0 text-900"><span class="fas fa-history me-2"></span>Recién Ingresados</h4>
@@ -157,7 +192,7 @@ import { AuthService } from '../../core/services/auth.service';
                 </thead>
                 <tbody class="list">
                   <ng-container *ngIf="isLoadingLotes && ultimosLotes.length === 0">
-                    <tr *ngFor="let i of [1,2,3,4,5]">
+                    <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let i of [1,2,3,4,5]; let idx = index">
                       <td class="ps-4 py-3"><div class="skeleton skeleton-text-lg" style="width: 80%"></div></td>
                       <td class="py-3"><div class="skeleton skeleton-text" style="width: 70%"></div></td>
                       <td class="py-3"><div class="skeleton skeleton-text" style="width: 60px"></div></td>
@@ -168,7 +203,7 @@ import { AuthService } from '../../core/services/auth.service';
                     </tr>
                   </ng-container>
 
-                  <tr *ngFor="let lote of ultimosLotes">
+                  <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let lote of ultimosLotes; let idx = index">
                     <td class="align-middle ps-4">
                       <div class="fw-bold text-1100 fs-0 text-uppercase">{{ lote.nombre_generico }}</div>
                       <div class="text-600 fs--2">{{ lote.nombre_presentacion }}</div>
@@ -249,7 +284,7 @@ import { AuthService } from '../../core/services/auth.service';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let m of medicamentosFiltrados()" style="cursor:pointer" (click)="seleccionarMedicamento(m.id)">
+                  <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let m of medicamentosFiltrados(); let idx = index" style="cursor:pointer" (click)="seleccionarMedicamento(m.id)">
                     <td class="ps-3 align-middle py-2">
                       <div class="fw-bold text-1100 fs--1">{{ m.nombre }}</div>
                       <div class="d-flex flex-wrap gap-1 mt-1" *ngIf="m.componentes_json?.length; else sinComponentes">
@@ -311,7 +346,7 @@ import { AuthService } from '../../core/services/auth.service';
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let lote of previewData">
+                    <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let lote of previewData; let idx = index">
                       <td class="ps-3 fw-bold">{{ lote.idx }}</td>
                       <td>
                         <span class="fw-bold text-900">{{ lote.medicamento }}</span><br>
@@ -340,8 +375,9 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
       </div>
     </div>
-  `,
-  styles: []
+  
+    </div>
+  `
 })
 export class DotacionComponent implements OnInit {
   private fb = inject(FormBuilder);

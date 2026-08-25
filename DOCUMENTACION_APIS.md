@@ -163,6 +163,40 @@ Este documento detalla todos los endpoints expuestos por el Backend de **SIFARMA
     *   `existe_exacto: true` si hay un duplicado exacto activo.
     *   `existe_parcial: true` si comparte nombre genérico pero difieren componentes.
 
+### 4.4 Consulta de Disponibilidad de Medicamentos (Integraciones Internas)
+*   **Endpoint**: `POST /api/medicamentos/disponibilidad/`
+*   **Permiso**: Libre (AllowAny) para integraciones institucionales.
+*   **Cuerpo (Payload JSON - Opcional)**:
+    ```json
+    {
+      "busqueda": "Acetaminofen",
+      "categoria": "Analgésicos",
+      "solo_disponibles": true
+    }
+    ```
+*   **Respuesta (JSON)**:
+    ```json
+    [
+      {
+        "id_med_base": 64,
+        "nombre_generico": "ACETAMINOFEN - BLISTER X 10 TAB.",
+        "categoria": "ANALGÉSICOS",
+        "presentacion": "BLISTER X 10 TAB.",
+        "clasificacion": "CONTROLADO",
+        "disponible": true,
+        "componentes": [
+          {
+            "id_principio": 1,
+            "nombre_principio": "ACETAMINOFEN",
+            "concentracion_valor": 500,
+            "id_unidad": 1,
+            "nombre_unidad": "MG"
+          }
+        ]
+      }
+    ]
+    ```
+
 ---
 
 ## 5. Catálogos Auxiliares (`/api/catalogos/`)
@@ -215,6 +249,13 @@ Permiten administrar las tablas paramétricas del sistema (Presentaciones, Categ
 *   **Permiso**: Encargado o Superior
 *   **Payload**: Form-Data con archivo adjunto (`file`) y booleano `confirmado`.
 *   **Propósito**: Valida la planilla de forma exhaustiva y, si `confirmado` es `true`, realiza la inserción transaccional de los lotes.
+
+### 6.6 Consultar Siguiente Número de Lote Secuencial
+*   **Endpoint**: `GET /api/dotacion/lotes/siguiente-numero/`
+*   **Permiso**: Operativo o Superior
+*   **Query Params**: `schema` (`farmacia` o `proveeduria`).
+*   **Respuesta**: `{ "siguiente_lote": "YYYY-XXXXXX" }` (ej: `2026-000088`).
+*   **Propósito**: Busca en la base de datos el menor número entero positivo disponible para evitar duplicados y rellenar secuencias bajas, reiniciando cada año.
 
 ---
 

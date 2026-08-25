@@ -14,7 +14,42 @@ import { RouterModule } from '@angular/router';
   selector: 'app-medicamentos',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+  styles: [`
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .anim-fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-up {
+      opacity: 0;
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-scale-up {
+      opacity: 0;
+      animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-right {
+      opacity: 0;
+      animation: slideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+`],
   template: `
+    <div class="anim-fade-in">
     <div class="mb-5">
       <div class="row g-3 justify-content-between align-items-end">
         <div class="col-auto">
@@ -28,8 +63,7 @@ import { RouterModule } from '@angular/router';
         </div>
       </div>
     </div>
-
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4 anim-slide-up">
       <div class="col-12 col-md-4">
         <div class="card h-100 shadow-none border-translucent">
           <div class="card-body text-center d-flex flex-column justify-content-center">
@@ -42,7 +76,7 @@ import { RouterModule } from '@angular/router';
       <div class="col-12 col-md-4">
         <div class="card h-100 shadow-none border-translucent">
           <div class="card-body text-center d-flex flex-column justify-content-center">
-            <h4 class="text-primary mb-1" *ngIf="catalogos.presentaciones.length > 0">{{ catalogos.presentaciones.length | number }}</h4>
+            <h6 class="text-primary mb-1" *ngIf="catalogos.presentaciones.length > 0">{{ catalogos.presentaciones.length | number }}</h6>
             <div class="skeleton skeleton-text-lg mx-auto" style="width: 40px" *ngIf="catalogos.presentaciones.length === 0"></div>
             <p class="text-500 fs--1 mb-0"><span class="fas fa-tags me-1 text-primary"></span>Total Presentaciones</p>
           </div>
@@ -61,8 +95,8 @@ import { RouterModule } from '@angular/router';
       </div>
     </div>
 
-    <div class="card shadow-none border-translucent mb-3">
-      <div class="card-header border-bottom border-translucent bg-body-emphasis">
+    <div class="card shadow-none border-translucent mb-3 anim-scale-up delay-100">
+      <div class="card-header border-bottom border-translucent bg-body-emphasis">s">
         <div class="row g-3 justify-content-between align-items-center">
           <div class="col-auto">
             <h4 class="mb-0 text-body-emphasis">Listado de Medicamentos</h4>
@@ -96,7 +130,7 @@ import { RouterModule } from '@angular/router';
             </thead>
             <tbody class="list" [style.opacity]="isPaginating && !isLoading ? '0.5' : '1'" style="transition: opacity 0.2s;">
               <ng-container *ngIf="isLoading">
-                <tr *ngFor="let i of [1,2,3,4,5]">
+                <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let i of [1,2,3,4,5]; let idx = index">
                   <td class="ps-4 py-3"><div class="skeleton skeleton-text-lg" style="width: 60%"></div></td>
                   <td class="py-3"><div class="skeleton skeleton-text" style="width: 70%"></div></td>
                   <td class="py-3"><div class="skeleton skeleton-text" style="width: 80%"></div></td>
@@ -106,7 +140,7 @@ import { RouterModule } from '@angular/router';
               </ng-container>
 
               <ng-container *ngIf="!isLoading">
-                <tr *ngFor="let m of medicamentos" class="hover-actions-trigger btn-reveal-trigger">
+                <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" *ngFor="let m of medicamentos; let idx = index" class="anim-slide-right hover-actions-trigger btn-reveal-trigger">
                   <td class="align-middle ps-4 py-3">
                     <div class="fw-bold text-body-emphasis fs-0 text-uppercase">{{ m.nombre_generico }}</div>
                     <div class="fs--2 text-500 text-uppercase mt-1" *ngIf="m.nombre_categoria">
@@ -401,7 +435,7 @@ import { RouterModule } from '@angular/router';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let med of coincidenciasList">
+                  <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let med of coincidenciasList; let idx = index">
                     <td class="align-middle fw-semi-bold">{{ med.nombre_categoria }}</td>
                     <td class="align-middle">{{ med.nombre_presentacion }}</td>
                     <td class="align-middle text-600">{{ med.componentes }}</td>
@@ -434,10 +468,9 @@ import { RouterModule } from '@angular/router';
       </div>
     </div>
     <div class="modal-backdrop fade show" *ngIf="showCoincidenciasModal" style="z-index: 1065;"></div>
-  `,
-  styles: [`
-    .modal.show { display: block; }
-  `]
+  
+    </div>
+  `
 })
 export class MedicamentosComponent implements OnInit {
   medicamentos: MedicamentoBase[] = [];

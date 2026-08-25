@@ -572,3 +572,50 @@ class CargarLoteMasivoView(APIView):
 
         except Exception as e:
             return Response({'detail': f'Error procesando el archivo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class SiguienteNumeroLoteView(APIView):
+    """Retorna el siguiente número de lote secuencial disponible para el año actual."""
+    permission_classes = [IsOperativoOrAbove]
+
+    def get(self, request):
+        role = get_user_role(request.user)
+        schema = 'proveeduria' if role == 'PROVEEDURIA' else 'farmacia'
+        if role in ('ADMINISTRADOR', 'ENCARGADO') and 'schema' in request.GET:
+            target_schema = request.GET.get('schema')
+            if target_schema in ['farmacia', 'proveeduria']:
+                schema = target_schema
+
+        import datetime
+        year = datetime.date.today().year
+
+        with connection.cursor() as cursor:
+            # Seleccionar todos los números de lote activos o inactivos de ese año
+            cursor.execute(f"""
+                SELECT numero_lote 
+                FROM {schema}.lotes 
+                WHERE numero_lote LIKE %s
+            """, [f"DEM-{year}-%"])
+            rows = cursor.fetchall()
+
+        # Extraer los números
+        existing_nums = set()
+        for r in rows:
+            lote_str = r[0]
+            parts = lote_str.split('-')
+            if len(parts) == 3:
+                try:
+                    num = int(parts[2])
+                    existing_nums.add(num)
+                except ValueError:
+                    pass
+
+        # Buscar el menor número entero positivo que no esté en uso
+        next_num = 1
+        while next_num in existing_nums:
+            next_num += 1
+
+        # Formato retornado: YYYY-XXXXXX (ej: 2026-000003) ya que el UI concatena "DEM-" en el label lateral
+        formatted = f"{year}-{next_num:06d}"
+        return Response({'siguiente_lote': formatted})
+

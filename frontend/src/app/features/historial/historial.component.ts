@@ -32,7 +32,42 @@ interface DespachoAgrupado {
   selector: 'app-historial',
   standalone: true,
   imports: [CommonModule, FormsModule, CedulaPipe],
+  styles: [`
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .anim-fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-up {
+      opacity: 0;
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-scale-up {
+      opacity: 0;
+      animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-right {
+      opacity: 0;
+      animation: slideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+`],
   template: `
+    <div class="anim-fade-in">
     <div class="mb-5">
       <div class="row g-3 justify-content-between align-items-center">
         <div class="col-auto">
@@ -77,7 +112,7 @@ interface DespachoAgrupado {
     </div>
 
     <!-- Lista -->
-    <div class="row g-3">
+    <div class="row g-3 anim-scale-up">
       <!-- Skeleton Loader -->
       <div class="col-12" *ngIf="isLoading && grupos.length === 0">
         <div class="card border border-300 shadow-sm mb-4 placeholder-glow" *ngFor="let i of [1, 2, 3]">
@@ -234,7 +269,7 @@ interface DespachoAgrupado {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let item of g.items">
+                  <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let item of g.items; let idx = index">
                     <td class="ps-4 py-3">
                       <div class="fw-bold text-1000 fs-0">{{ item.nombre_generico }}</div>
                       <div class="text-600 fs--2 mt-1">{{ item.nombre_presentacion }}</div>
@@ -319,10 +354,9 @@ interface DespachoAgrupado {
         </div>
       </div>
     </div>
-  `,
-  styles: [`
-    .italic { font-style: italic; }
-  `]
+  
+    </div>
+  `
 })
 export class HistorialComponent implements OnInit, OnDestroy {
   private despachoService = inject(DespachoService);

@@ -9,7 +9,42 @@ import { environment } from '../../../environments/environment';
   selector: 'app-auditoria-logs',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  styles: [`
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .anim-fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-up {
+      opacity: 0;
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-scale-up {
+      opacity: 0;
+      animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-right {
+      opacity: 0;
+      animation: slideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+`],
   template: `
+    <div class="anim-fade-in">
     <div class="mb-4">
       <h2 class="mb-1 text-1100">Bitácora de Eventos</h2>
       <h5 class="text-700 fw-semi-bold">Seguimiento detallado de todas las acciones del sistema</h5>
@@ -123,7 +158,7 @@ import { environment } from '../../../environments/environment';
             <tbody>
               <!-- Skeletons mientras carga -->
               <ng-container *ngIf="isLoading">
-                <tr *ngFor="let i of skeletonRows">
+                <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let i of skeletonRows; let idx = index">
                   <td class="ps-4 py-3">
                     <div class="skeleton skeleton-text" style="width: 80px"></div>
                     <div class="skeleton skeleton-text mt-1" style="width: 60px"></div>
@@ -138,7 +173,7 @@ import { environment } from '../../../environments/environment';
 
               <!-- Datos reales -->
               <ng-container *ngIf="!isLoading">
-                <tr *ngFor="let log of logsPaginados; trackBy: trackById">
+                <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let log of logsPaginados; trackBy: trackById; let idx = index">
                   <td class="ps-4 text-700 white-space-nowrap">
                     <span class="fas fa-clock me-1 text-400 fs--2"></span>
                     {{ log.fecha_hora | date:'dd/MM/yyyy' }}<br>
@@ -196,8 +231,9 @@ import { environment } from '../../../environments/environment';
         </div>
       </div>
     </div>
-  `,
-  styles: []
+  
+    </div>
+  `
 })
 export class AuditoriaLogsComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);

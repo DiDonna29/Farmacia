@@ -97,7 +97,9 @@
 
 @media (max-width: 991.98px) {
   .content {
-    margin-left: 0;
+    margin-left: 0 !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
 }
 
@@ -445,3 +447,151 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: inline-block !important;
   line-height: 1.5 !important;
 }
+
+/* ─── Entry Animations & Staggered (Cascada) effects ─────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(-15px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.anim-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.anim-slide-up {
+  opacity: 0;
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.anim-scale-up {
+  opacity: 0;
+  animation: scaleUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.anim-slide-left {
+  opacity: 0;
+  animation: slideLeft 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Delay classes for staggered/cascada entries */
+.delay-50  { animation-delay: 50ms; }
+.delay-75  { animation-delay: 75ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-225 { animation-delay: 225ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-375 { animation-delay: 375ms; }
+.delay-450 { animation-delay: 450ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* ─── Smooth Theme Toggle (Modo Oscuro / Claro) ─────────────────────── */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *:before,
+html.theme-transition *:after {
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Transición nativa por View Transition API (Reveal radial desde arriba-izquierda) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: theme-reveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  clip-path: circle(0% at 0% 0%);
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0% at 0% 0%);
+  }
+  to {
+    clip-path: circle(150% at 0% 0%);
+  }
+}
+
+/* ─── Global Responsive Improvements for Modals & Tables ─── */
+
+/* Cap tables min-width inside scrollable wrappers to keep columns legible */
+.table-responsive table {
+  min-width: 650px;
+}
+
+/* Viewport height scaling for modals (highly responsive on low-resolution monitors) */
+@media (max-height: 800px) {
+  .modal-content[style*="max-height"] {
+    max-height: 85vh !important;
+  }
+  .table-responsive[style*="max-height"] {
+    max-height: calc(85vh - 240px) !important;
+  }
+}
+
+@media (max-height: 650px) {
+  .modal-content[style*="max-height"] {
+    max-height: 90vh !important;
+  }
+  .table-responsive[style*="max-height"] {
+    max-height: calc(90vh - 220px) !important;
+  }
+  /* Scale down modal padding on very small heights */
+  .modal-body {
+    padding: 0.75rem !important;
+  }
+  .modal-header, .modal-footer {
+    padding: 0.5rem 1rem !important;
+  }
+}
+
+/* General responsive spacing for cards and grids */
+@media (max-width: 575.98px) {
+  .card-body {
+    padding: 1rem !important;
+  }
+  h2, .h2 {
+    font-size: 1.5rem !important;
+  }
+  h5, .h5 {
+    font-size: 0.95rem !important;
+  }
+}
+
+/* ─── Responsive Table Adaptability Overrides ─── */
+@media (max-width: 991.98px) {
+  .table-responsive table {
+    font-size: 0.8rem !important;
+  }
+  .table-responsive th, .table-responsive td {
+    padding: 0.45rem 0.45rem !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .table-responsive table {
+    font-size: 0.76rem !important;
+  }
+  .table-responsive th, .table-responsive td {
+    padding: 0.35rem 0.35rem !important;
+  }
+}
+
+

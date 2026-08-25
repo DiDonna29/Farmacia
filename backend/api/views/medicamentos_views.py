@@ -597,3 +597,84 @@ class VerificarDuplicadoMedicamentoView(APIView):
             'existe_exacto': False,
             'existe_parcial': False
         })
+
+
+from rest_framework.permissions import AllowAny
+
+class DisponibilidadMedicamentosAPIView(APIView):
+    """
+    API pública/interna para consultar la disponibilidad de medicamentos en el departamento de Farmacia.
+    Retorna especificaciones completas de los medicamentos y si están disponibles o no.
+    No muestra cantidades numéricas exactas.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        busqueda = request.data.get('busqueda', '').strip()
+        categoria = request.data.get('categoria', '').strip()
+        solo_disponibles = request.data.get('solo_disponibles', False)
+
+        params = []
+        where_clauses = ['m.activo = TRUE']
+
+        if busqueda:
+            where_clauses.append(''' (
+                unaccent(m.nombre_generico) ILIKE unaccent(%s) OR 
+                unaccent(c.nombre_categoria) ILIKE unaccent(%s) OR
+                EXISTS (
+                    SELECT 1 FROM farmacia.medicamento_componentes mc 
+                    JOIN farmacia.principios_activos pa ON mc.id_principio = pa.id_principio 
+                    WHERE mc.id_med_base = m.id_med_base AND unaccent(pa.nombre_principio) ILIKE unaccent(%s)
+                )
+            )''')
+            params.extend([f'%{busqueda}%', f'%{busqueda}%', f'%{busqueda}%'])
+
+        if categoria:
+            where_clauses.append('unaccent(c.nombre_categoria) ILIKE unaccent(%s)')
+            params.append(f'%{categoria}%')
+
+        where_str = ' AND '.join(where_clauses)
+        if where_str:
+            where_str = 'WHERE ' + where_str
+
+        sql = f"""
+            SELECT
+                m.id_med_base, m.nombre_generico,
+                c.nombre_categoria AS categoria,
+                p.nombre_presentacion AS presentacion,
+                cl.nombre_clasificacion AS clasificacion,
+                (COALESCE(SUM(lo.cantidad_actual), 0) > 0) AS disponible,
+                (
+                    SELECT COALESCE(json_agg(json_build_object(
+                        'id_principio', mc.id_principio,
+                        'nombre_principio', pa.nombre_principio,
+                        'concentracion_valor', mc.concentracion_valor,
+                        'id_unidad', mc.id_unidad,
+                        'nombre_unidad', u.nombre_unidad
+                    )), '[]'::json)
+                    FROM farmacia.medicamento_componentes mc
+                    JOIN farmacia.principios_activos pa ON mc.id_principio = pa.id_principio
+                    JOIN farmacia.unidades_medida u ON mc.id_unidad = u.id_unidad
+                    WHERE mc.id_med_base = m.id_med_base
+                ) AS componentes
+            FROM farmacia.medicamentos_base m
+            LEFT JOIN farmacia.categorias_medicamento c ON m.id_categoria = c.id_categoria
+            LEFT JOIN farmacia.presentaciones_medicamento p ON m.id_presentacion = p.id_presentacion
+            LEFT JOIN farmacia.clasificaciones_medicamentos cl ON m.id_clasificacion = cl.id_clasificacion
+            LEFT JOIN farmacia.lotes lo ON m.id_med_base = lo.id_med_base AND lo.activo = TRUE
+            {where_str}
+            GROUP BY
+                m.id_med_base, m.nombre_generico,
+                c.nombre_categoria, p.nombre_presentacion, cl.nombre_clasificacion
+            ORDER BY m.nombre_generico ASC
+        """
+
+        with connection.cursor() as cursor:
+            cursor.execute(sql, params)
+            rows = dictfetchall(cursor)
+
+        # Si se solicita filtrar solo disponibles
+        if solo_disponibles:
+            rows = [r for r in rows if r['disponible']]
+
+        return Response(rows, status=status.HTTP_200_OK)

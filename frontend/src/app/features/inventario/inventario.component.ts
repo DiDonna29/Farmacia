@@ -12,13 +12,48 @@ import { AuthService } from '../../core/services/auth.service';
   selector: 'app-inventario',
   standalone: true,
   imports: [CommonModule],
+  styles: [`
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .anim-fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-up {
+      opacity: 0;
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-scale-up {
+      opacity: 0;
+      animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-right {
+      opacity: 0;
+      animation: slideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+`],
   template: `
+    <div class="anim-fade-in">
     <div class="mb-4">
       <h2 class="mb-2 text-1100">Inventario Completo</h2>
       <h5 class="text-700 fw-semi-bold">Gestión de existencias y control de vencimientos</h5>
     </div>
 
-    <div class="row g-3 mb-5">
+    <div class="row g-3 mb-5 anim-slide-up">
       <!-- Módulo 1: Existencia Global -->
       <div class="col-12 col-md-6">
         <div class="card shadow-none border-translucent h-100 bg-primary-subtle">
@@ -75,7 +110,7 @@ import { AuthService } from '../../core/services/auth.service';
       </div>
     </div>
 
-    <div class="card shadow-none border-translucent mb-3">
+    <div class="card shadow-none border-translucent mb-3 anim-scale-up delay-100">
       <div class="card-header border-bottom border-translucent p-4">
         <div class="row g-3 justify-content-between align-items-center">
           <div class="col-12 col-md-auto">
@@ -125,7 +160,7 @@ import { AuthService } from '../../core/services/auth.service';
             </thead>
             <tbody class="list">
               <ng-container *ngIf="isLoading">
-                <tr *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]">
+                <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]; let idx = index">
                   <td class="ps-4 py-3"><div class="skeleton skeleton-text-lg"></div></td>
                   <td class="py-3"><div class="skeleton skeleton-text" style="width: 90%"></div></td>
                   <td class="py-3"><div class="skeleton skeleton-text" style="width: 70%"></div></td>
@@ -136,7 +171,7 @@ import { AuthService } from '../../core/services/auth.service';
               </ng-container>
 
               <ng-container *ngIf="!isLoading">
-                <tr *ngFor="let item of inventario">
+                <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let item of inventario; let idx = index">
                   <td class="align-middle fw-bold text-body-emphasis ps-4">
                     <div class="text-uppercase">{{ item.medicamento_detallado.split(' - ')[0] }}</div>
                     <div class="text-600 fs--2 fw-normal">{{ item.nombre_presentacion }}</div>
@@ -233,8 +268,9 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
       </div>
     </div>
-  `,
-  styles: [``]
+  
+    </div>
+  `
 })
 export class InventarioComponent implements OnInit {
   inventario: LoteInventario[] = [];

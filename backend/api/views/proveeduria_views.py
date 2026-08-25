@@ -87,6 +87,18 @@ class InventarioProveeduriaView(APIView):
                 pm.nombre_presentacion,
                 l.numero_lote,
                 l.cantidad_actual,
+                (
+                    SELECT COALESCE(SUM(cantidad), 0)
+                    FROM proveeduria.solicitudes_reservas
+                    WHERE id_lote = l.id_lote AND schema_name = '{esquema}'
+                ) AS cantidad_reservada,
+                (
+                    l.cantidad_actual - (
+                        SELECT COALESCE(SUM(cantidad), 0)
+                        FROM proveeduria.solicitudes_reservas
+                        WHERE id_lote = l.id_lote AND schema_name = '{esquema}'
+                    )
+                ) AS cantidad_disponible,
                 l.fecha_vencimiento,
                 (
                     SELECT COALESCE(json_agg(json_build_object(
@@ -102,13 +114,13 @@ class InventarioProveeduriaView(APIView):
                     WHERE mc.id_med_base = mb.id_med_base
                 ) AS componentes_json,
                 CASE 
-                    WHEN l.cantidad_actual <= 0 THEN 'AGOTADO'
+                    WHEN (l.cantidad_actual - (SELECT COALESCE(SUM(cantidad), 0) FROM proveeduria.solicitudes_reservas WHERE id_lote = l.id_lote AND schema_name = '{esquema}')) <= 0 THEN 'AGOTADO'
                     WHEN l.fecha_vencimiento < CURRENT_DATE THEN 'VENCIDO'
                     WHEN l.fecha_vencimiento <= (CURRENT_DATE + INTERVAL '4 months') THEN 'PRÓXIMO A VENCER'
                     ELSE 'ÓPTIMO'
                 END as estado_logico,
                 CASE 
-                    WHEN l.cantidad_actual <= 0 THEN 'secondary'
+                    WHEN (l.cantidad_actual - (SELECT COALESCE(SUM(cantidad), 0) FROM proveeduria.solicitudes_reservas WHERE id_lote = l.id_lote AND schema_name = '{esquema}')) <= 0 THEN 'secondary'
                     WHEN l.fecha_vencimiento < CURRENT_DATE THEN 'danger'
                     WHEN l.fecha_vencimiento <= (CURRENT_DATE + INTERVAL '4 months') THEN 'warning'
                     ELSE 'success'
@@ -192,12 +204,16 @@ class SolicitudesDotacionView(APIView):
                 s.origen,
                 s.destino,
                 ((s.fecha_solicitud AT TIME ZONE 'UTC') AT TIME ZONE 'America/Caracas') as fecha_solicitud,
+                ((s.fecha_entrega AT TIME ZONE 'UTC') AT TIME ZONE 'America/Caracas') as fecha_entrega,
                 s.estado,
                 s.observaciones,
                 u.username as usuario_solicita,
-                (SELECT COUNT(*) FROM proveeduria.solicitudes_detalle WHERE id_solicitud = s.id_solicitud) as total_items
+                (SELECT COUNT(*) FROM proveeduria.solicitudes_detalle WHERE id_solicitud = s.id_solicitud) as total_items,
+                COALESCE(m.tipo_solicitud, 'DISPONIBLES') as tipo_solicitud,
+                m.fecha_entrega_programada
             FROM proveeduria.solicitudes s
             JOIN auth_user u ON s.id_usuario_solicitante = u.id
+            LEFT JOIN proveeduria.solicitudes_metadata m ON s.id_solicitud = m.id_solicitud
             WHERE 1=1
         """
         params = []
@@ -230,11 +246,13 @@ class SolicitudesDotacionView(APIView):
         origen = data.get('origen', 'FARMACIA')
         destino = data.get('destino', 'PROVEEDURIA')
         observaciones = data.get('observaciones', '')
+        tipo_solicitud = data.get('tipo_solicitud', 'DISPONIBLES')
         
         if not items:
             return Response({'detail': 'No se enviaron medicamentos en la solicitud.'}, status=status.HTTP_400_BAD_REQUEST)
 
         folio = f"SOL-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        schema_destino = 'proveeduria' if 'PROV' in destino.upper() else 'farmacia'
         
         try:
             with transaction.atomic():
@@ -247,14 +265,55 @@ class SolicitudesDotacionView(APIView):
                     """, [folio, origen, destino, request.user.id, observaciones])
                     id_solicitud = cursor.fetchone()[0]
 
-                    # 2. Crear detalles
+                    # 2. Guardar tipo_solicitud en metadata
+                    cursor.execute("""
+                        INSERT INTO proveeduria.solicitudes_metadata (id_solicitud, tipo_solicitud)
+                        VALUES (%s, %s)
+                    """, [id_solicitud, tipo_solicitud])
+
+                    # 3. Crear detalles y reservar stock si es DISPONIBLES
                     for item in items:
+                        id_med = item['id_med_base']
+                        cant = int(item['cantidad'])
+                        
                         cursor.execute("""
                             INSERT INTO proveeduria.solicitudes_detalle (id_solicitud, id_med_base, cantidad_solicitada)
                             VALUES (%s, %s, %s)
-                        """, [id_solicitud, item['id_med_base'], item['cantidad']])
+                        """, [id_solicitud, id_med, cant])
 
-            registrar_evento(request, "SOLICITUD_CREADA", f"Nueva solicitud creada: {folio}", {"id": id_solicitud, "items": len(items)})
+                        if tipo_solicitud == 'DISPONIBLES':
+                            # Buscar lotes activos en schema_destino ordenados por fecha_vencimiento ASC
+                            # (disponible = cantidad_actual - cantidad_reservada)
+                            cursor.execute(f"""
+                                SELECT id_lote, (cantidad_actual - (
+                                    SELECT COALESCE(SUM(cantidad), 0)
+                                    FROM proveeduria.solicitudes_reservas
+                                    WHERE id_lote = l.id_lote AND schema_name = %s
+                                )) as disponible
+                                FROM {schema_destino}.lotes l
+                                WHERE id_med_base = %s AND activo = true AND (cantidad_actual - (
+                                    SELECT COALESCE(SUM(cantidad), 0)
+                                    FROM proveeduria.solicitudes_reservas
+                                    WHERE id_lote = l.id_lote AND schema_name = %s
+                                )) > 0
+                                ORDER BY fecha_vencimiento ASC
+                            """, [schema_destino, id_med, schema_destino])
+                            lots = cursor.fetchall()
+                            
+                            remaining = cant
+                            for lot_id, disponible in lots:
+                                if remaining <= 0:
+                                    break
+                                to_reserve = min(remaining, disponible)
+                                if to_reserve > 0:
+                                    # Insertar en solicitudes_reservas
+                                    cursor.execute("""
+                                        INSERT INTO proveeduria.solicitudes_reservas (id_solicitud, id_lote, schema_name, cantidad)
+                                        VALUES (%s, %s, %s, %s)
+                                    """, [id_solicitud, lot_id, schema_destino, to_reserve])
+                                    remaining -= to_reserve
+
+            registrar_evento(request, "SOLICITUD_CREADA", f"Nueva solicitud creada: {folio}", {"id": id_solicitud, "items": len(items), "tipo": tipo_solicitud})
             
             return Response({'id': id_solicitud, 'folio': folio}, status=status.HTTP_201_CREATED)
         except Exception as e:
@@ -291,9 +350,17 @@ class ProcesarSolicitudView(APIView):
         estado_nuevo = request.data.get('estado', 'ENTREGADA')
         comentario = request.data.get('comentario', '')
         detalles_entrega = request.data.get('items', []) # [{id_med_base, cantidad_a_entregar, id_lote_origen}]
+        fecha_entrega_custom = request.data.get('fecha_entrega') # 'YYYY-MM-DD'
         
         if estado_nuevo == 'ENTREGADA' and not detalles_entrega:
             return Response({'detail': 'No se especificaron items para entregar.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        fecha_entrega_val = None
+        if fecha_entrega_custom:
+            try:
+                fecha_entrega_val = datetime.strptime(fecha_entrega_custom, '%Y-%m-%d').date()
+            except ValueError:
+                return Response({'detail': 'Formato de fecha de entrega inválido. Debe ser YYYY-MM-DD.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             with transaction.atomic():
@@ -307,6 +374,9 @@ class ProcesarSolicitudView(APIView):
                     origen = sol_info[0].upper()
                     destino = sol_info[1].upper()
                     folio = sol_info[2]
+
+                    # Liberar reservas siempre (tanto para Aprobado como para Rechazado)
+                    cursor.execute("DELETE FROM proveeduria.solicitudes_reservas WHERE id_solicitud = %s", [id_solicitud])
                     
                     if estado_nuevo == 'RECHAZADA':
                         cursor.execute("SELECT observaciones FROM proveeduria.solicitudes WHERE id_solicitud = %s", [id_solicitud])
@@ -326,7 +396,7 @@ class ProcesarSolicitudView(APIView):
                         """, [request.user.id, nuevas_obs, id_solicitud])
                         
                         registrar_evento(request, "SOLICITUD_RECHAZADA", f"Solicitud {id_solicitud} RECHAZADA. Motivo: {comentario}", {"id": id_solicitud, "comentario": comentario})
-                        return Response({'detail': 'Solicitud rechazada correctamente.'})
+                        return Response({'detail': 'Solicitud rechazada correctamente y reservas liberadas.'})
 
                     # 2. Procesar cada item
                     movimientos_log = []
@@ -337,10 +407,9 @@ class ProcesarSolicitudView(APIView):
 
                         if cant > 0 and id_lote_orig:
                             # DESTINO da el existencia (se descuenta de DESTINO)
-                            # ORIGEN recibe el existencia (se añade a ORIGEN solo si tiene inventario interno)
                             schema_quien_da = 'proveeduria' if 'PROV' in destino.upper() else 'farmacia'
                             
-                            # Validar si el ORIGEN (receptor) tiene inventario interno (FARMACIA o PROVEEDURIA)
+                            # Validar si el ORIGEN (receptor) tiene inventario interno
                             recibe_tiene_inventario = 'PROV' in origen.upper() or 'FARM' in origen.upper()
                             schema_quien_recibe = None
                             if recibe_tiene_inventario:
@@ -371,7 +440,7 @@ class ProcesarSolicitudView(APIView):
                                         cantidad_actual = {schema_quien_recibe}.lotes.cantidad_actual + EXCLUDED.cantidad_actual
                                 """, [id_med, num_lote_dest, cant, cant, f_venc, f_venc, request.user.id])
 
-                                # Obtener ID del lote receptor para registrar log
+                                # Obtener ID del lote receptor
                                 cursor.execute(f"""
                                     SELECT id_lote FROM {schema_quien_recibe}.lotes 
                                     WHERE id_med_base = %s AND numero_lote = %s
@@ -379,12 +448,12 @@ class ProcesarSolicitudView(APIView):
                                 lote_dest_row = cursor.fetchone()
                                 id_lote_dest = lote_dest_row[0] if lote_dest_row else None
 
-                            # C. Registrar logs de inventario
+                            # C. Registrar logs
                             log_inventario(request, "EGRESO", id_lote_orig, f"Despacho desde {destino} por solicitud {folio} a {origen}: {cant} unidades del Lote {num_lote}")
                             if recibe_tiene_inventario and id_lote_dest:
                                 log_inventario(request, "INCLUSION", id_lote_dest, f"Dotación automática por solicitud {folio} desde {destino}: {cant} unidades asignadas al Lote {num_lote_dest}")
 
-                            # Obtener nombre del medicamento para el log
+                            # Obtener nombre del medicamento
                             cursor.execute("SELECT nombre_generico FROM farmacia.medicamentos_base WHERE id_med_base = %s", [id_med])
                             med_row = cursor.fetchone()
                             med_nombre = med_row[0] if med_row else f"ID:{id_med}"
@@ -398,26 +467,48 @@ class ProcesarSolicitudView(APIView):
                                     f"{med_nombre} | Lote: {num_lote} | {schema_quien_da.upper()}: {existencia_antes}→{existencia_despues} | Consumido por {origen}"
                                 )
 
-                        # D. Actualizar cantidad entregada en el detalle de la solicitud
+                        # D. Actualizar cantidad entregada
                         cursor.execute("""
                             UPDATE proveeduria.solicitudes_detalle 
                             SET cantidad_entregada = cantidad_entregada + %s
                             WHERE id_solicitud = %s AND id_med_base = %s
                         """, [cant, id_solicitud, id_med])
 
-                    # 3. Marcar solicitud como ENTREGADA
-                    cursor.execute("""
-                        UPDATE proveeduria.solicitudes 
-                        SET estado = 'ENTREGADA', id_usuario_procesador = %s, fecha_entrega = now()
-                        WHERE id_solicitud = %s
-                    """, [request.user.id, id_solicitud])
+                    # 3. Marcar solicitud como ENTREGADA (con hora igual a la de la solicitud)
+                    if fecha_entrega_custom:
+                        cursor.execute("""
+                            SELECT (fecha_solicitud AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas')::time 
+                            FROM proveeduria.solicitudes 
+                            WHERE id_solicitud = %s
+                        """, [id_solicitud])
+                        time_val = cursor.fetchone()[0]
+                        local_dt_str = f"{fecha_entrega_custom} {time_val}"
+                        
+                        cursor.execute("""
+                            UPDATE proveeduria.solicitudes 
+                            SET estado = 'ENTREGADA', id_usuario_procesador = %s, 
+                                fecha_entrega = %s::timestamp AT TIME ZONE 'America/Caracas'
+                            WHERE id_solicitud = %s
+                        """, [request.user.id, local_dt_str, id_solicitud])
+                    else:
+                        cursor.execute("""
+                            UPDATE proveeduria.solicitudes 
+                            SET estado = 'ENTREGADA', id_usuario_procesador = %s, fecha_entrega = NOW()
+                            WHERE id_solicitud = %s
+                        """, [request.user.id, id_solicitud])
+
+                    if fecha_entrega_val:
+                        cursor.execute("""
+                            UPDATE proveeduria.solicitudes_metadata
+                            SET fecha_entrega_programada = %s
+                            WHERE id_solicitud = %s
+                        """, [fecha_entrega_val, id_solicitud])
 
             resumen = " | ".join(movimientos_log) if movimientos_log else "Sin movimientos de existencias"
             registrar_evento(request, "SOLICITUD_PROCESADA",
                 f"Solicitud {id_solicitud} ENTREGADA ({destino}→{origen}). Movimientos: {resumen}",
                 {"id": id_solicitud, "movimientos": movimientos_log})
 
-            # Registrar también como despacho formal en la bitácora de eventos
             registrar_evento(request, "DESPACHO",
                 f"Despacho desde {destino} al departamento {origen} por solicitud {folio}. Movimientos: {resumen}",
                 {"id_solicitud": id_solicitud, "origen": origen, "destino": destino, "movimientos": movimientos_log})
@@ -425,7 +516,6 @@ class ProcesarSolicitudView(APIView):
             return Response({'detail': 'Solicitud procesada y existencias transferidas correctamente.'})
         except Exception as e:
             return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 class SolicitudPDFView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 

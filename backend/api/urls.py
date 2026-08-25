@@ -11,10 +11,10 @@ from api.views.medicamentos_views import (
     MedicamentosBaseView, MedicamentoDetailView,
     PresentacionesView, CategoriasView,
     ClasificacionesView, UnidadesMedidaView, TallasCalibresView,
-    VerificarDuplicadoMedicamentoView
+    VerificarDuplicadoMedicamentoView, DisponibilidadMedicamentosAPIView
 )
 from api.views.principios_activos_views import PrincipiosActivosView
-from api.views.dotacion_views import RegistrarLoteView, HistorialLotesView, MedicamentosParaLoteView, VerificarDotacionRecienteView, CargarLoteMasivoView
+from api.views.dotacion_views import RegistrarLoteView, HistorialLotesView, MedicamentosParaLoteView, VerificarDotacionRecienteView, CargarLoteMasivoView, SiguienteNumeroLoteView
 from api.views.despacho_views import (
     BuscarMedicamentoDespachoView, ProcesarDespachoView, 
     HistorialDespachosView, GenerarComprobantePDFView
@@ -56,6 +56,7 @@ urlpatterns = [
     path('medicamentos/', MedicamentosBaseView.as_view(), name='api-medicamentos'),
     path('medicamentos/<int:pk>/', MedicamentoDetailView.as_view(), name='api-medicamento-detail'),
     path('medicamentos/verificar-duplicado/', VerificarDuplicadoMedicamentoView.as_view(), name='api-verificar-duplicado'),
+    path('medicamentos/disponibilidad/', DisponibilidadMedicamentosAPIView.as_view(), name='api-disponibilidad-medicamentos'),
 
     # ─── Catálogos auxiliares ────────────────────────────────────────────────
     path('catalogos/presentaciones/', PresentacionesView.as_view(), name='api-presentaciones'),
@@ -75,6 +76,7 @@ urlpatterns = [
     path('dotacion/medicamentos/', MedicamentosParaLoteView.as_view(), name='api-medicamentos-para-lote'),
     path('dotacion/verificar-reciente/<int:id_med_base>/', VerificarDotacionRecienteView.as_view(), name='api-verificar-dotacion-reciente'),
     path('dotacion/lotes/cargar-masivo/', CargarLoteMasivoView.as_view(), name='api-cargar-lote-masivo'),
+    path('dotacion/lotes/siguiente-numero/', SiguienteNumeroLoteView.as_view(), name='api-siguiente-lote-numero'),
 
     # ─── Despacho ────────────────────────────────────────────────────────────
     path('despacho/buscar/', BuscarMedicamentoDespachoView.as_view(), name='api-buscar-medicamento'),

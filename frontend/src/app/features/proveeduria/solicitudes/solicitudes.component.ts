@@ -13,7 +13,46 @@ import { ActivatedRoute } from '@angular/router';
   selector: 'app-proveeduria-solicitudes',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  styles: [`
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .anim-fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-up {
+      opacity: 0;
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-scale-up {
+      opacity: 0;
+      animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-right {
+      opacity: 0;
+      animation: slideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .sticky-top th {
+      background-color: #232e3c !important;
+      color: #fff !important;
+    }
+`],
   template: `
+    <div class="anim-fade-in">
     <div>
       <div class="mb-4 d-flex flex-wrap justify-content-between align-items-end gap-2">
         <div>
@@ -26,7 +65,7 @@ import { ActivatedRoute } from '@angular/router';
       </div>
 
       <!-- Filtros Rápidos -->
-      <div class="card shadow-none border border-300 mb-4">
+      <div class="card shadow-none border border-300 mb-4 anim-slide-up">
         <div class="card-body p-3">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div class="d-flex align-items-center gap-3">
@@ -57,7 +96,7 @@ import { ActivatedRoute } from '@angular/router';
       </div>
 
       <!-- Tabla de Solicitudes -->
-      <div class="card shadow-none border border-300">
+      <div class="card shadow-none border border-300 anim-scale-up" style="animation-delay: 150ms">
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table table-sm fs--1 mb-0">
@@ -65,7 +104,8 @@ import { ActivatedRoute } from '@angular/router';
                 <tr>
                   <th class="ps-4 py-2">Folio</th>
                   <th>De (Solicitante) / Para (Proveedor)</th>
-                  <th>Fecha</th>
+                  <th>Fecha Solicitud</th>
+                  <th>Fecha Entrega</th>
                   <th>Solicitante</th>
                   <th>Estado</th>
                   <th class="text-center">Items</th>
@@ -73,7 +113,7 @@ import { ActivatedRoute } from '@angular/router';
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let s of paginatedSolicitudes">
+                <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let s of paginatedSolicitudes; let idx = index">
                   <td class="ps-4 fw-bold text-primary text-nowrap">{{ s.folio }}</td>
                   <td class="text-nowrap">
                     <span class="badge badge-phoenix badge-phoenix-info fs--2">{{ s.origen }}</span>
@@ -81,6 +121,7 @@ import { ActivatedRoute } from '@angular/router';
                     <span class="badge badge-phoenix badge-phoenix-primary fs--2">{{ s.destino }}</span>
                   </td>
                   <td class="text-nowrap">{{ s.fecha_solicitud | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td class="text-nowrap">{{ s.fecha_entrega ? (s.fecha_entrega | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
                   <td class="text-nowrap">{{ s.usuario_solicita }}</td>
                   <td class="text-nowrap">
                     <span class="badge fs--2" [ngClass]="{
@@ -101,7 +142,7 @@ import { ActivatedRoute } from '@angular/router';
                   </td>
                 </tr>
                 <tr *ngIf="paginatedSolicitudes.length === 0">
-                  <td colspan="7" class="text-center py-5 text-500">No se encontraron solicitudes</td>
+                  <td colspan="8" class="text-center py-5 text-500">No se encontraron solicitudes</td>
                 </tr>
               </tbody>
             </table>
@@ -258,39 +299,47 @@ import { ActivatedRoute } from '@angular/router';
     </div>
 
     <!-- Modal Detalle / Procesar -->
-    <div class="modal fade" [class.show]="showModalDetalle" [style.display]="showModalDetalle ? 'block' : 'none'" tabindex="-1">
+    <div class="modal fade" [class.show]="showModalDetalle" [style.display]="showModalDetalle ? 'block' : 'none'" [style.background-color]="showModalDetalle ? 'rgba(0, 0, 0, 0.6)' : 'transparent'" style="transition: background-color 0.15s linear;" tabindex="-1">
        <div class="modal-dialog modal-xl modal-dialog-centered">
-         <div class="modal-content border-0 shadow-lg">
+         <div class="modal-content border-0 shadow-lg" style="max-height: 80vh;">
            <div class="modal-header bg-primary text-white">
              <h5 class="modal-title text-white">
                <span class="fas fa-file-invoice me-2"></span>{{ solicitudSeleccionada?.estado === 'PENDIENTE' ? 'Procesar Entrega' : 'Detalle de Solicitud' }}: {{ solicitudSeleccionada?.folio }}
              </h5>
              <button type="button" class="btn-close btn-close-white" (click)="cerrarModalDetalle()"></button>
            </div>
-           <div class="modal-body">
-             <div class="row mb-3" *ngIf="solicitudSeleccionada">
-                 <div class="col-md-3">
-                     <small class="text-700">De (Solicitante):</small><br>
-                     <span class="fw-bold fs-1 text-primary">{{ solicitudSeleccionada.origen }}</span>
-                 </div>
-                 <div class="col-md-3">
-                     <small class="text-700">Para (Proveedor):</small><br>
-                     <span class="fw-bold fs-1 text-primary">{{ solicitudSeleccionada.destino }}</span>
-                 </div>
-                 <div class="col-md-3">
-                     <small class="text-700">Estado:</small><br>
-                     <span class="badge fs-0" [ngClass]="{
-                       'badge-phoenix-warning': solicitudSeleccionada.estado === 'PENDIENTE',
-                       'badge-phoenix-success': solicitudSeleccionada.estado === 'ENTREGADA',
-                       'badge-phoenix-danger':  solicitudSeleccionada.estado === 'RECHAZADA'
-                     }">{{ solicitudSeleccionada.estado }}</span>
-                 </div>
-                 <div class="col-md-3 text-end" *ngIf="solicitudSeleccionada.estado !== 'PENDIENTE'">
-                     <button class="btn btn-outline-danger mt-2" (click)="generarPDF(solicitudSeleccionada)">
-                       <span class="fas fa-file-pdf me-2"></span>Descargar PDF
-                     </button>
-                 </div>
-             </div>
+           <div class="modal-body" style="overflow: hidden; display: flex; flex-direction: column;">
+             <div class="row mb-3 g-3 align-items-center" *ngIf="solicitudSeleccionada">
+                  <div class="col-6 col-md-2">
+                      <small class="text-700">De (Solicitante):</small><br>
+                      <span class="fw-bold fs-0 text-primary">{{ solicitudSeleccionada.origen }}</span>
+                  </div>
+                  <div class="col-6 col-md-2">
+                      <small class="text-700">Para (Proveedor):</small><br>
+                      <span class="fw-bold fs-0 text-primary">{{ solicitudSeleccionada.destino }}</span>
+                  </div>
+                  <div class="col-6 col-md-2">
+                      <small class="text-700">Fecha Solicitud:</small><br>
+                      <span class="fw-bold fs-0 text-800">{{ solicitudSeleccionada.fecha_solicitud | date:'dd/MM/yyyy' }}<br>{{ solicitudSeleccionada.fecha_solicitud | date:'HH:mm' }}</span>
+                  </div>
+                  <div class="col-6 col-md-2" *ngIf="solicitudSeleccionada.fecha_entrega">
+                      <small class="text-700">Fecha Entrega:</small><br>
+                      <span class="fw-bold fs-0 text-success">{{ solicitudSeleccionada.fecha_entrega | date:'dd/MM/yyyy' }}<br>{{ solicitudSeleccionada.fecha_entrega | date:'HH:mm' }}</span>
+                  </div>
+                  <div class="col-6 col-md-2">
+                      <small class="text-700">Estado:</small><br>
+                      <span class="badge fs-0" [ngClass]="{
+                        'badge-phoenix-warning': solicitudSeleccionada.estado === 'PENDIENTE',
+                        'badge-phoenix-success': solicitudSeleccionada.estado === 'ENTREGADA',
+                        'badge-phoenix-danger':  solicitudSeleccionada.estado === 'RECHAZADA'
+                      }">{{ solicitudSeleccionada.estado }}</span>
+                  </div>
+                  <div class="col-12 col-md text-md-end" *ngIf="solicitudSeleccionada.estado !== 'PENDIENTE'">
+                      <button class="btn btn-outline-danger mt-2" (click)="generarPDF(solicitudSeleccionada)" style="min-width: 160px;">
+                        <span class="fas fa-file-pdf me-2"></span>Descargar PDF
+                      </button>
+                  </div>
+              </div>
 
              <!-- Observaciones / Motivo de Rechazo -->
              <div class="mb-3 p-3 bg-body-tertiary rounded border" *ngIf="solicitudSeleccionada && solicitudSeleccionada.observaciones">
@@ -298,10 +347,10 @@ import { ActivatedRoute } from '@angular/router';
                <div class="text-800 fs--1" style="white-space: pre-line;">{{ solicitudSeleccionada.observaciones }}</div>
              </div>
 
-             <div class="table-responsive">
+             <div class="table-responsive" style="max-height: calc(80vh - 240px); overflow-y: auto;">
                <table class="table table-sm border align-middle">
-                 <thead class="bg-light">
-                   <tr>
+                 <thead class="sticky-top" style="top: 0; z-index: 10; background-color: #232e3c !important;">
+                   <tr class="text-white">
                      <th>Nombre Medicamento</th>
                      <th *ngIf="solicitudSeleccionada?.estado !== 'PENDIENTE'">Principios Activos/Componentes</th>
                       <th class="text-center" style="width:100px">Cant. Solicitada</th>
@@ -410,6 +459,25 @@ import { ActivatedRoute } from '@angular/router';
             <button type="button" class="btn-close btn-close-white" (click)="cerrarBuscador()"></button>
           </div>
           <div class="modal-body">
+            <!-- Pestañas del Buscador (Disponibles vs No Disponibles) -->
+            <ul class="nav nav-links mb-3 border-bottom border-300">
+              <li class="nav-item">
+                <button type="button" class="nav-link py-2" [class.active]="activeTabBuscador === 'disponibles'" [disabled]="bloquearTabBuscador === 'disponibles'" (click)="setTabBuscador('disponibles')" style="border:none; background:none;">
+                  <span class="fas fa-check-circle me-1 text-success"></span>Disponibles
+                </button>
+              </li>
+              <li class="nav-item">
+                <button type="button" class="nav-link py-2" [class.active]="activeTabBuscador === 'nodisponibles'" [disabled]="bloquearTabBuscador === 'nodisponibles'" (click)="setTabBuscador('nodisponibles')" style="border:none; background:none;">
+                  <span class="fas fa-times-circle me-1 text-danger"></span>No Disponibles
+                </button>
+              </li>
+            </ul>
+
+            <div class="alert alert-subtle-warning py-2 px-3 mb-3 fs--2 d-flex align-items-center gap-2" *ngIf="bloquearTabBuscador">
+              <span class="fas fa-info-circle"></span>
+              <span>La pestaña opuesta se encuentra bloqueada porque ya ha añadido ítems a la solicitud actual.</span>
+            </div>
+
             <input type="text" class="form-control mb-3" placeholder="Buscar por nombre o componente..." [(ngModel)]="busquedaMed">
             <div class="table-responsive" style="height: 415px; overflow-y: auto;">
               <table class="table table-sm table-hover border align-middle">
@@ -421,7 +489,7 @@ import { ActivatedRoute } from '@angular/router';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let m of paginatedMeds" (click)="seleccionarMed(m)" style="cursor: pointer;"
+                  <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let m of paginatedMeds; let idx = index" (click)="seleccionarMed(m)" style="cursor: pointer;"
                       [class.table-secondary]="m.existencia_total === 0">
                     <td>
                       <span class="fw-semibold" [ngClass]="{'text-500': m.existencia_total === 0}">{{ m.nombre_generico }}</span>
@@ -462,25 +530,9 @@ import { ActivatedRoute } from '@angular/router';
         </div>
       </div>
     </div>
-  `,
-  styles: [`
-    .modal { background: rgba(0,0,0,0.5); z-index: 1050; }
-    .modal.show { display: block; }
-    .modal-content { color: var(--phoenix-body-color, inherit); }
-    
-    /* Hide spinners on number inputs */
-    input[type="number"].hide-spinners::-webkit-outer-spin-button,
-    input[type="number"].hide-spinners::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    input[type="number"].hide-spinners {
-      -moz-appearance: textfield;
-    }
-    :host ::ng-deep body.modal-open {
-      overflow: hidden !important;
-    }
-  `]
+  
+    </div>
+  `
 })
 export class SolicitudesComponent implements OnInit {
   solicitudes: any[] = [];
@@ -498,7 +550,8 @@ export class SolicitudesComponent implements OnInit {
     origen_otro: '',
     destino: 'PROVEEDURIA',
     observaciones: '',
-    items: [] as any[]
+    items: [] as any[],
+    tipo_solicitud: 'DISPONIBLES'
   };
 
   itemTemporal: { id_med_base: number, cantidad: any } = {
@@ -730,10 +783,14 @@ export class SolicitudesComponent implements OnInit {
   }
 
   inventarioDestino: any[] = [];
+  activeTabBuscador = 'disponibles';
+  bloquearTabBuscador = '';
 
   abrirModalNueva(): void {
-    this.nuevaSolicitud = { origen: '', origen_otro: '', destino: '', observaciones: '', items: [] };
+    this.nuevaSolicitud = { origen: '', origen_otro: '', destino: '', observaciones: '', items: [], tipo_solicitud: 'DISPONIBLES' };
     this.itemTemporal = { id_med_base: 0, cantidad: '' };
+    this.activeTabBuscador = 'disponibles';
+    this.bloquearTabBuscador = '';
     
     if (this.authSvc.hasRole('ADMINISTRADOR', 'DIRECTOR_SERVICIO_MEDICO')) {
       this.nuevaSolicitud.origen = 'FARMACIA';
@@ -800,7 +857,7 @@ export class SolicitudesComponent implements OnInit {
     let arr = this.medicamentos.map(m => {
       const existencia = this.inventarioDestino
         .filter(l => l.id_med_base === m.id_med_base)
-        .reduce((sum, l) => sum + Number(l.cantidad_actual), 0);
+        .reduce((sum, l) => sum + Number(l.cantidad_disponible !== undefined ? l.cantidad_disponible : l.cantidad_actual), 0);
       return {
         id_med_base: m.id_med_base,
         nombre_generico: m.nombre_generico,
@@ -809,6 +866,14 @@ export class SolicitudesComponent implements OnInit {
         existencia_total: existencia
       };
     });
+
+    // Separación por pestañas
+    if (this.activeTabBuscador === 'disponibles') {
+      arr = arr.filter(x => x.existencia_total > 0);
+    } else {
+      arr = arr.filter(x => x.existencia_total === 0);
+    }
+
     if (this.busquedaMed) {
       const q = this.busquedaMed.toLowerCase();
       // Búsqueda inteligente (por partes) en nombre y componentes
@@ -851,6 +916,11 @@ export class SolicitudesComponent implements OnInit {
     if (p >= 1 && p <= this.medsTotalPages) this.medsCurrentPage = p;
   }
 
+  setTabBuscador(tab: string): void {
+    this.activeTabBuscador = tab;
+    this.medsCurrentPage = 1;
+  }
+
   abrirBuscador() {
     this.busquedaMed = '';
     this.medsCurrentPage = 1;
@@ -875,34 +945,52 @@ export class SolicitudesComponent implements OnInit {
     const cant = parseInt(String(this.itemTemporal.cantidad), 10);
     if (this.itemTemporal.id_med_base && cant > 0) {
       this.itemTemporal.cantidad = cant;
-      // Verificar existencia en destino
-      const existenciaDisp = this.inventarioDestino
-        .filter(l => l.id_med_base == this.itemTemporal.id_med_base)
-        .reduce((sum, l) => sum + Number(l.cantidad_actual), 0);
-        
-      if (existenciaDisp < cant) {
-         if (existenciaDisp === 0 && this.nuevaSolicitud.destino === 'FARMACIA') {
-           this.swal.error('Sin Existencia', 'Este medicamento no tiene existencia en Farmacia.');
-           return;
-         }
+      
+      // Bloquear pestaña en la primera adición
+      if (this.nuevaSolicitud.items.length === 0) {
+        this.bloquearTabBuscador = this.activeTabBuscador === 'disponibles' ? 'nodisponibles' : 'disponibles';
+        this.nuevaSolicitud.tipo_solicitud = this.activeTabBuscador === 'disponibles' ? 'DISPONIBLES' : 'NO_DISPONIBLES';
+      }
 
-         import('sweetalert2').then(Swal => {
-           Swal.default.fire({
-             title: 'Advertencia de Existencia',
-             text: `El departamento ${this.nuevaSolicitud.destino} solo tiene ${existenciaDisp} unidades disponibles. ¿Desea agregarlo de todas formas?`,
-             icon: 'warning',
-             showCancelButton: true,
-             confirmButtonText: 'Sí, agregar',
-             cancelButtonText: 'Cancelar'
-           }).then(result => {
-             if (result.isConfirmed) {
-                this.nuevaSolicitud.items.push({...this.itemTemporal});
-                this.itemTemporal = { id_med_base: 0, cantidad: '' };
-                this.cdr.detectChanges();
+      if (this.activeTabBuscador === 'disponibles') {
+        // Verificar existencia en destino (inventario libre/disponible)
+        const existenciaDisp = this.inventarioDestino
+          .filter(l => l.id_med_base == this.itemTemporal.id_med_base)
+          .reduce((sum, l) => sum + Number(l.cantidad_disponible !== undefined ? l.cantidad_disponible : l.cantidad_actual), 0);
+          
+        if (existenciaDisp < cant) {
+           if (existenciaDisp === 0 && this.nuevaSolicitud.destino === 'FARMACIA') {
+             this.swal.error('Sin Existencia', 'Este medicamento no tiene existencia en Farmacia.');
+             // Si falló, desbloqueamos la pestaña si el carro sigue vacío
+             if (this.nuevaSolicitud.items.length === 0) {
+               this.bloquearTabBuscador = '';
              }
+             return;
+           }
+
+           import('sweetalert2').then(Swal => {
+             Swal.default.fire({
+               title: 'Advertencia de Existencia',
+               text: `El departamento ${this.nuevaSolicitud.destino} solo tiene ${existenciaDisp} unidades disponibles. ¿Desea agregarlo de todas formas?`,
+               icon: 'warning',
+               showCancelButton: true,
+               confirmButtonText: 'Sí, agregar',
+               cancelButtonText: 'Cancelar'
+             }).then(result => {
+               if (result.isConfirmed) {
+                  this.nuevaSolicitud.items.push({...this.itemTemporal});
+                  this.itemTemporal = { id_med_base: 0, cantidad: '' };
+                  this.cdr.detectChanges();
+               } else {
+                 // Si canceló, desbloqueamos si el carro está vacío
+                 if (this.nuevaSolicitud.items.length === 0) {
+                   this.bloquearTabBuscador = '';
+                 }
+               }
+             });
            });
-         });
-         return;
+           return;
+        }
       }
 
       this.nuevaSolicitud.items.push({...this.itemTemporal});
@@ -912,6 +1000,9 @@ export class SolicitudesComponent implements OnInit {
 
   quitarItem(index: number): void {
     this.nuevaSolicitud.items.splice(index, 1);
+    if (this.nuevaSolicitud.items.length === 0) {
+      this.bloquearTabBuscador = '';
+    }
   }
 
   getNombreMed(id: number): string {
@@ -939,7 +1030,7 @@ export class SolicitudesComponent implements OnInit {
       this.swal.success('Solicitud enviada exitosamente');
       this.cerrarModal();
       this.cargarSolicitudes();
-      this.nuevaSolicitud = { origen: 'FARMACIA', origen_otro: '', destino: 'PROVEEDURIA', observaciones: '', items: [] as any[] };
+      this.nuevaSolicitud = { origen: 'FARMACIA', origen_otro: '', destino: 'PROVEEDURIA', observaciones: '', items: [] as any[], tipo_solicitud: 'DISPONIBLES' };
     });
   }
 
@@ -1133,12 +1224,71 @@ export class SolicitudesComponent implements OnInit {
             }
           }
         }
-    }
 
-    this.enviarProcesamiento(nuevoEstado, '');
+        // Modal de selección de fecha
+        import('sweetalert2').then(Swal => {
+          Swal.default.fire({
+            title: 'Procesamiento de la Solicitud',
+            text: '¿Desea procesar y entregar la solicitud el día de hoy, o seleccionar una fecha programada para la entrega de medicamentos?',
+            icon: 'question',
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Procesar hoy',
+            denyButtonText: 'Programar entrega',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#10b981',
+            denyButtonColor: '#3b82f6',
+            cancelButtonColor: '#6b7280'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Procesar hoy
+              this.enviarProcesamiento('ENTREGADA', '', undefined);
+            } else if (result.isDenied) {
+              // Programar entrega
+              Swal.default.fire({
+                title: 'Seleccionar Fecha de Entrega',
+                html: `<input type="date" id="swal-delivery-date" class="swal2-input" min="${this.getTomorrowDateString()}">`,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar Fecha',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                  const dateInput = (document.getElementById('swal-delivery-date') as HTMLInputElement).value;
+                  if (!dateInput) {
+                    Swal.default.showValidationMessage('Debe seleccionar una fecha');
+                    return false;
+                  }
+                  
+                  // Validar que sea fecha futura (no hoy ni anterior)
+                  const selectedDate = new Date(dateInput + 'T00:00:00');
+                  const today = new Date();
+                  today.setHours(0,0,0,0);
+                  
+                  if (selectedDate <= today) {
+                    Swal.default.showValidationMessage('La fecha debe ser estrictamente posterior al día de hoy');
+                    return false;
+                  }
+                  
+                  return dateInput;
+                }
+              }).then((dateResult) => {
+                if (dateResult.isConfirmed && dateResult.value) {
+                  this.enviarProcesamiento('ENTREGADA', '', dateResult.value);
+                }
+              });
+            }
+          });
+        });
+    }
   }
 
-  private enviarProcesamiento(nuevoEstado: string, comentario: string) {
+  getTomorrowDateString(): string {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  }
+
+  private enviarProcesamiento(nuevoEstado: string, comentario: string, fechaEntrega?: string) {
     // Expandir multi-lote: un ítem por cada fila de lote asignado
     const items: any[] = [];
     for (const d of this.detallesSolicitud) {
@@ -1151,7 +1301,7 @@ export class SolicitudesComponent implements OnInit {
       }
     }
 
-    const data = { estado: nuevoEstado, comentario, items };
+    const data = { estado: nuevoEstado, comentario, items, fecha_entrega: fechaEntrega };
 
     this.svc.procesarSolicitud(this.solicitudSeleccionada.id_solicitud, data).subscribe({
       next: () => {
@@ -1160,7 +1310,8 @@ export class SolicitudesComponent implements OnInit {
         this.cargarSolicitudes();
       },
       error: (err) => {
-        this.swal.error('Error al procesar', err.error?.detail || 'Ocurrió un error inesperado.');
+        console.error('Error al procesar la solicitud en el servidor:', err);
+        this.swal.error('Error al procesar', 'No se pudo completar el procesamiento. Por favor, verifique el inventario o consulte los registros del servidor.');
       }
     });
   }

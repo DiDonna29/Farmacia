@@ -17,7 +17,42 @@ import { CedulaPipe } from '../../shared/pipes/cedula.pipe';
   selector: 'app-despacho',
   standalone: true,
   imports: [CommonModule, FormsModule, SoloNumerosDirective, UppercaseDirective, CedulaPipe],
+  styles: [`
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .anim-fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-up {
+      opacity: 0;
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-scale-up {
+      opacity: 0;
+      animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-right {
+      opacity: 0;
+      animation: slideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+`],
   template: `
+    <div class="anim-fade-in">
     <div class="mb-5">
       <div class="row g-3 justify-content-between align-items-end">
         <div class="col-auto">
@@ -33,7 +68,7 @@ import { CedulaPipe } from '../../shared/pipes/cedula.pipe';
     <div class="row g-3">
       <!-- Columna Principal: Formulario de Despacho -->
       <div class="col-12 col-xl-8">
-        <div class="card shadow-none border-translucent">
+        <div class="card shadow-none border-translucent anim-scale-up">
           <div class="card-header border-bottom border-translucent bg-body-tertiary py-3">
             <h4 class="mb-0 text-body-emphasis"><span class="fas fa-file-invoice me-2"></span>Nueva Entrega</h4>
           </div>
@@ -328,7 +363,7 @@ import { CedulaPipe } from '../../shared/pipes/cedula.pipe';
 
       <!-- Barra Lateral Informativa -->
       <div class="col-12 col-xl-4">
-        <div class="card shadow-none border border-300 mb-3">
+        <div class="card shadow-none border border-300 mb-3 anim-scale-up delay-100">
           <div class="card-header border-bottom border-300 bg-body-tertiary py-3">
             <h5 class="mb-0 text-1000"><span class="fas fa-info-circle me-2 text-primary"></span>Acerca del Sistema FEFO</h5>
           </div>
@@ -393,7 +428,7 @@ import { CedulaPipe } from '../../shared/pipes/cedula.pipe';
                 <tbody>
                   <!-- Estado: Skeletons (Cargando) -->
                   <ng-container *ngIf="isLoadingModal">
-                    <tr *ngFor="let n of [1,2,3,4,5]">
+                    <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let n of [1,2,3,4,5]; let idx = index">
                       <td class="ps-3 align-middle py-3">
                         <div class="skeleton-h8 w-75 mb-2"></div>
                         <div class="skeleton-h5 w-50"></div>
@@ -415,7 +450,7 @@ import { CedulaPipe } from '../../shared/pipes/cedula.pipe';
 
                   <!-- Estado: Lista Pagina -->
                   <ng-container *ngIf="!isLoadingModal">
-                    <tr *ngFor="let m of pagedMedicines" (click)="seleccionarMedicamento(m)" style="cursor: pointer">
+                    <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let m of pagedMedicines; let idx = index" (click)="seleccionarMedicamento(m)" style="cursor: pointer">
                       <td class="ps-3 align-middle py-2">
                         <div class="fw-bold text-1100 fs-0 text-uppercase">{{ (m.medicamento_detallado || m.nombre_generico).split(' - ')[0] }}</div>
                         <div class="text-600 fs--2">{{ m.presentacion }}</div>
@@ -551,7 +586,7 @@ import { CedulaPipe } from '../../shared/pipes/cedula.pipe';
                   </tr>
 
                   <!-- Opciones: Cargas Familiares -->
-                  <tr *ngFor="let carga of titularEncontrado.cargas_familiares" (click)="seleccionarBeneficiarioFinal(carga, 'CARGA')" style="cursor: pointer">
+                  <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let carga of titularEncontrado.cargas_familiares; let idx = index" (click)="seleccionarBeneficiarioFinal(carga, 'CARGA')" style="cursor: pointer">
                     <td class="ps-3 align-middle text-center">
                       <div class="form-check mb-0">
                         <input class="form-check-input" type="radio" name="benef_radio" [checked]="beneficiarioSeleccionado?.id_original === (carga.cedula_beneficiario)" />
@@ -597,72 +632,9 @@ import { CedulaPipe } from '../../shared/pipes/cedula.pipe';
         </div>
       </div>
     </div>
-  `,
-  styles: [`
-    .step-number {
-      width: 24px; height: 24px; border-radius: 50%;
-      background: #2563eb; color: white;
-      font-size: 0.75rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .badge-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-    .bg-soft-success-fefo { background-color: rgba(22, 163, 74, 0.1) !important; }
-    .bg-soft-warning-fefo { background-color: rgba(202, 138, 4, 0.1) !important; }
-    .bg-soft-danger-fefo { background-color: rgba(220, 38, 38, 0.1) !important; }
-    .bg-soft-info-fefo { background-color: rgba(56, 116, 255, 0.1) !important; }
-    
-    /* Adaptación Colores Sexo (Intensidad Phoenix) */
-    .badge-gender-pink { 
-      background-color: #ffffff; color: #9d174d; border: 1px solid #fbcfe8;
-      min-width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center; 
-      font-weight: 800; border-radius: 0.25rem; line-height: 1;
-    }
-    .badge-gender-blue { 
-      background-color: #ffffff; color: #0369a1; border: 1px solid #bae6fd;
-      min-width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center; 
-      font-weight: 800; border-radius: 0.25rem; line-height: 1;
-    }
-
-    /* Selectores agresivos para modo oscuro */
-    [data-bs-theme="dark"] .badge-gender-pink,
-    [data-theme="dark"] .badge-gender-pink,
-    .dark .badge-gender-pink { 
-      background-color: #141824 !important; 
-      color: #f472b6 !important; 
-      border: 1px solid #9d174d !important;
-    }
-    
-    [data-bs-theme="dark"] .badge-gender-blue,
-    [data-theme="dark"] .badge-gender-blue,
-    .dark .badge-gender-blue { 
-      background-color: #141824 !important; 
-      color: #7dd3fc !important; 
-      border: 1px solid #0369a1 !important;
-    }
-
-    /* Skeleton Loading Effects */
-    .skeleton-h5, .skeleton-h8, .skeleton-h12 {
-      background: linear-gradient(90deg, var(--phoenix-gray-200) 25%, var(--phoenix-gray-300) 37%, var(--phoenix-gray-200) 63%);
-      background-size: 400% 100%;
-      animation: skeleton-loading 1.4s ease infinite;
-    }
-    .skeleton-h5 { height: 10px; }
-    .skeleton-h8 { height: 16px; }
-    .skeleton-h12 { height: 22px; }
-
-    [data-bs-theme="dark"] .skeleton-h5, 
-    [data-bs-theme="dark"] .skeleton-h8, 
-    [data-bs-theme="dark"] .skeleton-h12 {
-      background: linear-gradient(90deg, var(--phoenix-gray-900) 25%, var(--phoenix-gray-800) 37%, var(--phoenix-gray-900) 63%);
-      background-size: 400% 100%;
-    }
-
-    @keyframes skeleton-loading {
-      0% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-  `]
+  
+    </div>
+  `
 })
 export class DespachoComponent implements OnInit {
   medicamentoBusqueda = '';

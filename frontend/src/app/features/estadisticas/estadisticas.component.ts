@@ -15,6 +15,7 @@ Chart.register(...registerables);
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
+    <div class="anim-fade-in">
     <!-- Header -->
     <div class="mb-4">
       <h2 class="mb-1 text-1100">Reportes y Gráficas</h2>
@@ -111,7 +112,7 @@ Chart.register(...registerables);
 
     <!-- KPIs de Alto Nivel -->
     <div class="row mt-3 g-3 mb-4">
-      <div class="col-6 col-md-3" *ngFor="let kpi of kpis">
+      <div class="col-6 col-md-3 anim-slide-up" *ngFor="let kpi of kpis; let idx = index" [style.animation-delay]="(idx * 100) + 'ms'">
         <div class="card h-100 border border-300 shadow-none overflow-hidden">
           <div class="card-body p-3">
             <div class="d-flex align-items-center justify-content-between mb-2">
@@ -136,7 +137,7 @@ Chart.register(...registerables);
     <div class="row g-4 mb-4">
       <!-- Balance de Movimiento -->
       <div class="col-12 col-xxl-8">
-        <div class="card h-100 border border-300 shadow-none">
+        <div class="card h-100 border border-300 shadow-none anim-scale-up" style="animation-delay: 200ms">
           <div class="card-header border-bottom border-300 d-flex justify-content-between align-items-center py-3 px-4">
             <h5 class="mb-0">Flujo de {{ modo === 'medicamentos' ? 'Unidades Totales' : 'Movimiento de Lotes' }} (Entradas vs Salidas)</h5>
             <div class="d-flex gap-2">
@@ -154,7 +155,7 @@ Chart.register(...registerables);
 
       <!-- Estado Actual Donut -->
       <div class="col-12 col-md-6 col-xxl-4">
-        <div class="card h-100 border border-300 shadow-none">
+        <div class="card h-100 border border-300 shadow-none anim-scale-up" style="animation-delay: 300ms">
           <div class="card-header border-bottom border-300 py-3 px-4">
             <h5 class="mb-0">Balance de Inventario Actual</h5>
           </div>
@@ -184,7 +185,7 @@ Chart.register(...registerables);
 
       <!-- Ranking Medicamentos -->
       <div class="col-12 col-md-6 col-xxl-6">
-        <div class="card h-100 border border-300 shadow-none">
+        <div class="card h-100 border border-300 shadow-none anim-scale-up" style="animation-delay: 400ms">
           <div class="card-header border-bottom border-300 py-3 px-4">
             <h5 class="mb-0 text-uppercase fs--1 fw-bolder">Top 10 Medicamentos más Movilizados</h5>
           </div>
@@ -198,7 +199,7 @@ Chart.register(...registerables);
 
       <!-- Distribución por Categorías -->
       <div class="col-12 col-xxl-6">
-        <div class="card h-100 border border-300 shadow-none">
+        <div class="card h-100 border border-300 shadow-none anim-scale-up" style="animation-delay: 500ms">
           <div class="card-header border-bottom border-300 py-3 px-4">
             <h5 class="mb-0 text-uppercase fs--1 fw-bolder">Análisis de Movimientos por Categoría ({{ filtroPeriodo === 'custom' ? 'Rango' : filtroPeriodo }})</h5>
           </div>
@@ -213,7 +214,7 @@ Chart.register(...registerables);
                       </tr>
                    </thead>
                    <tbody>
-                      <tr *ngFor="let cat of categoriasData">
+                      <tr *ngFor="let cat of categoriasData; let idx = index" class="anim-slide-right" [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 600) + 'ms'">
                          <td class="ps-3 py-2 fw-bold text-700">{{ cat.categoria }}</td>
                          <td class="text-center">{{ cat.variedad }}</td>
                          <td class="text-end pe-3 fw-bolder text-primary">{{ cat.unidades | number }}</td>
@@ -227,7 +228,7 @@ Chart.register(...registerables);
     </div>
 
     <!-- Informes y Auditoría (Tabla Paginada) -->
-    <div class="card shadow-none border border-300 mb-4">
+    <div class="card shadow-none border border-300 mb-4 anim-scale-up" style="animation-delay: 600ms">
       <div class="card-header border-bottom border-300 bg-body-tertiary py-3 px-4 d-flex align-items-center justify-content-between">
         <h5 class="mb-0"><span class="fas fa-list-ul me-2 text-primary"></span>Detalle de Movimientos en el Período</h5>
         <div class="d-flex gap-2">
@@ -250,7 +251,7 @@ Chart.register(...registerables);
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let ing of paginatedIngresos">
+              <tr *ngFor="let ing of paginatedIngresos; let idx = index" class="anim-slide-right" [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 700) + 'ms'">
                 <td class="ps-4 white-space-nowrap">{{ ing.fecha_ingreso | date:'dd/MM/yyyy HH:mm' }}</td>
                 <td class="fw-bold">{{ ing.nombre_generico }}</td>
                 <td><small class="text-600">{{ ing.componentes || 'N/A' }}</small></td>
@@ -282,10 +283,42 @@ Chart.register(...registerables);
          </nav>
       </div>
     </div>
-
-    
+    </div>
   `,
   styles: [`
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .anim-fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-up {
+      opacity: 0;
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-scale-up {
+      opacity: 0;
+      animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-right {
+      opacity: 0;
+      animation: slideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
     .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; }
     .border-start-lg { border-left: 1px solid var(--phoenix-border-color); }
     @media (max-width: 991px) { .border-start-lg { border-left: none; } }

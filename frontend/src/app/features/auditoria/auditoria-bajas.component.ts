@@ -10,7 +10,42 @@ import { ChangeDetectorRef } from '@angular/core';
   selector: 'app-auditoria-bajas',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  styles: [`
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .anim-fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-up {
+      opacity: 0;
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-scale-up {
+      opacity: 0;
+      animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .anim-slide-right {
+      opacity: 0;
+      animation: slideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+`],
   template: `
+    <div class="anim-fade-in">
     <div class="mb-5">
       <div class="row g-3 justify-content-between align-items-end">
         <div class="col-auto">
@@ -56,7 +91,7 @@ import { ChangeDetectorRef } from '@angular/core';
     </ul>
 
     <!-- Contenido Medicamentos -->
-    <div class="card shadow-none border border-300" *ngIf="tab === 'meds'">
+    <div class="card shadow-none border border-300 anim-scale-up" style="animation-delay: 150ms" *ngIf="tab === 'meds'">
       <div class="card-header border-bottom border-300 py-3 px-4">
         <p class="mb-0 fs--1 text-600">
           <span class="fas fa-info-circle me-1"></span>
@@ -76,14 +111,14 @@ import { ChangeDetectorRef } from '@angular/core';
             </thead>
             <tbody>
               <ng-container *ngIf="cargandoMeds">
-                <tr *ngFor="let i of [1,2,3]">
+                <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let i of [1,2,3]; let idx = index">
                   <td class="ps-4 py-3"><div class="skeleton skeleton-text-lg"></div></td>
                   <td><div class="skeleton skeleton-text" style="width:80%"></div></td>
                   <td><div class="skeleton skeleton-text" style="width:60%"></div></td>
                   <td class="text-end pe-4"><div class="skeleton skeleton-rounded" style="height:24px;width:80px;margin-left:auto"></div></td>
                 </tr>
               </ng-container>
-              <tr *ngFor="let m of medsInactivos">
+              <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let m of medsInactivos; let idx = index">
                 <td class="ps-4 align-middle">
                     <div class="fw-bold text-uppercase">{{ m.nombre_generico }}</div>
                 </td>
@@ -110,7 +145,7 @@ import { ChangeDetectorRef } from '@angular/core';
     </div>
 
     <!-- Contenido Lotes -->
-    <div class="card shadow-none border border-300" *ngIf="tab === 'lotes'">
+    <div class="card shadow-none border border-300 anim-scale-up" style="animation-delay: 150ms" *ngIf="tab === 'lotes'">
       <div class="card-header border-bottom border-300 py-3 px-4 d-flex align-items-center justify-content-between">
         <p class="mb-0 fs--1 text-600">
           <span class="fas fa-warehouse me-1"></span>
@@ -137,7 +172,7 @@ import { ChangeDetectorRef } from '@angular/core';
             </thead>
             <tbody>
               <ng-container *ngIf="cargandoLotes">
-                <tr *ngFor="let i of [1,2,3]">
+                <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let i of [1,2,3]; let idx = index">
                   <td class="ps-4 py-3"><div class="skeleton skeleton-text" style="width:80px"></div></td>
                   <td><div class="skeleton skeleton-text-lg"></div></td>
                   <td class="text-end"><div class="skeleton skeleton-text" style="width:50px;margin-left:auto"></div></td>
@@ -146,7 +181,7 @@ import { ChangeDetectorRef } from '@angular/core';
                   <td class="text-end pe-4"><div class="skeleton skeleton-rounded" style="height:24px;width:110px;margin-left:auto"></div></td>
                 </tr>
               </ng-container>
-              <tr *ngFor="let l of lotesInactivos">
+              <tr [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 200) + 'ms'" class="anim-slide-right" *ngFor="let l of lotesInactivos; let idx = index">
                 <td class="ps-4 align-middle fw-bold"><code>{{ l.numero_lote }}</code></td>
                 <td class="align-middle">
                     <div>{{ l.nombre_generico }}</div>
@@ -172,11 +207,9 @@ import { ChangeDetectorRef } from '@angular/core';
         </div>
       </div>
     </div>
-  `,
-  styles: [`
-    .nav-link { cursor: pointer; }
-    .nav-link.active { font-weight: bold; color: var(--phoenix-primary) !important; border-bottom: 2px solid var(--phoenix-primary); }
-  `]
+  
+    </div>
+  `
 })
 export class AuditoriaBajasComponent implements OnInit {
   tab: 'meds' | 'lotes' = 'meds';

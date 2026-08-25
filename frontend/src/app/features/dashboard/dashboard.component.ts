@@ -10,7 +10,8 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
-    <div class="mb-4 d-flex flex-wrap justify-content-between align-items-end gap-2">
+    <div class="anim-fade-in">
+      <div class="mb-4 d-flex flex-wrap justify-content-between align-items-end gap-2">
       <div>
         <h2 class="mb-2 text-1100">Semáforo de Medicamentos</h2>
         <h5 class="text-700 fw-semi-bold">Resumen general de lotes y vigencias operativas</h5>
@@ -41,7 +42,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
       <ng-container *ngIf="stats || !isLoading">
         <div class="col-sm-6 col-xl-2">
           <div
-            class="card h-100 stat-card-hover"
+            class="card h-100 stat-card-hover anim-slide-up" style="animation-delay: 0ms"
             (click)="filtrarPor('')"
             [class.border-primary]="filtroActivo === ''"
             style="cursor:pointer"
@@ -66,7 +67,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
         <div class="col-sm-6 col-xl-2">
           <div
-            class="card h-100 stat-card-hover"
+            class="card h-100 stat-card-hover anim-slide-up" style="animation-delay: 100ms"
             (click)="filtrarPor('OPTIMO')"
             [class.border-success]="filtroActivo === 'OPTIMO'"
             style="cursor:pointer"
@@ -91,7 +92,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
         <div class="col-sm-6 col-xl-2">
           <div
-            class="card h-100 stat-card-hover"
+            class="card h-100 stat-card-hover anim-slide-up" style="animation-delay: 200ms"
             (click)="filtrarPor('PROXIMO')"
             [class.border-warning]="filtroActivo === 'PROXIMO'"
             style="cursor:pointer"
@@ -116,7 +117,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
         <div class="col-sm-6 col-xl-2">
           <div
-            class="card h-100 stat-card-hover"
+            class="card h-100 stat-card-hover anim-slide-up" style="animation-delay: 300ms"
             (click)="filtrarPor('VENCIDO')"
             [class.border-danger]="filtroActivo === 'VENCIDO'"
             style="cursor:pointer"
@@ -141,7 +142,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
         <div class="col-sm-6 col-xl-2">
           <div
-            class="card h-100 stat-card-hover"
+            class="card h-100 stat-card-hover anim-slide-up" style="animation-delay: 400ms"
             (click)="filtrarPor('AGOTADO')"
             [class.border-secondary]="filtroActivo === 'AGOTADO'"
             style="cursor:pointer"
@@ -192,7 +193,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
       </ng-container>
     </div>
 
-    <div class="card">
+    <div class="card anim-scale-up" style="animation-delay: 250ms">
 
       <div class="card-body px-0 pt-0">
         <div class="px-4 py-3 border-bottom d-flex flex-wrap gap-2 align-items-center">
@@ -289,7 +290,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
               </tr>
             </thead>
             <tbody class="list">
-              <tr *ngFor="let item of inventario">
+              <tr *ngFor="let item of inventario; let idx = index" class="anim-slide-right" [style.animation-delay]="((idx < 8 ? idx * 50 : 400) + 300) + 'ms'">
                 <td class="align-middle ps-4">
                   <div class="d-flex align-items-center gap-2">
                     <span class="fw-bold text-body-emphasis fs-0 text-uppercase">{{ item.medicamento_detallado.split(' - ')[0] }}</span>
@@ -388,9 +389,44 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
         </div>
       </div>
     </div>
+    </div>
   `,
   styles: [
     `
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes scaleUp {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      @keyframes slideRight {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      .anim-fade-in {
+        animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+      .anim-slide-up {
+        opacity: 0;
+        animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+      .anim-scale-up {
+        opacity: 0;
+        animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+      .anim-slide-right {
+        opacity: 0;
+        animation: slideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+
       .stat-card-hover {
         transition:
           transform 0.15s,

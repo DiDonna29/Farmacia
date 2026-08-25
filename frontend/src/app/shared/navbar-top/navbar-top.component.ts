@@ -111,7 +111,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
                 </div>
               </div>
               <div class="card-footer p-0 border-top">
-                <div class="px-3 pt-3">
+                <div class="p-3">
                   <a class="btn btn-phoenix-primary d-flex flex-center w-100 mb-2" routerLink="/perfil">
                     <span class="me-2 fas fa-user"></span>Mi Perfil
                   </a>
@@ -206,10 +206,24 @@ export class NavbarTopComponent implements OnInit {
   }
 
   toggleTheme(): void {
-    this.isDarkTheme = !this.isDarkTheme;
-    const theme = this.isDarkTheme ? 'dark' : 'light';
-    localStorage.setItem('phoenixTheme', theme);
-    document.documentElement.classList.toggle('dark', this.isDarkTheme);
+    const changeTheme = () => {
+      this.isDarkTheme = !this.isDarkTheme;
+      const theme = this.isDarkTheme ? 'dark' : 'light';
+      localStorage.setItem('phoenixTheme', theme);
+      document.documentElement.classList.toggle('dark', this.isDarkTheme);
+    };
+
+    if ((document as any).startViewTransition) {
+      (document as any).startViewTransition(() => {
+        changeTheme();
+      });
+    } else {
+      document.documentElement.classList.add('theme-transition');
+      changeTheme();
+      setTimeout(() => {
+        document.documentElement.classList.remove('theme-transition');
+      }, 400);
+    }
   }
 
   logout(): void {

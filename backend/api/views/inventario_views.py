@@ -252,6 +252,7 @@ class EditarLoteView(APIView):
     def post(self, request, pk):
         cantidad = request.data.get('cantidad')
         fecha_vencimiento = request.data.get('fecha_vencimiento')
+        numero_lote = request.data.get('numero_lote')
         
         esquema = request.query_params.get('schema', 'farmacia')
         if esquema not in ['farmacia', 'proveeduria']:
@@ -266,17 +267,49 @@ class EditarLoteView(APIView):
             if not lote:
                 return Response({'detail': 'Lote no encontrado'}, status=status.HTTP_404_NOT_FOUND)
             
-            old_qty, old_date = lote[2], lote[3]
+            old_qty, old_date, old_lote_name = lote[2], lote[3], lote[1]
             
+            # Si el lote cambia de nombre, validar permisos
+            if numero_lote and numero_lote.strip().upper() != old_lote_name.strip().upper():
+                from api.permissions import get_user_role
+                role = get_user_role(request.user)
+                if role not in ('ADMINISTRADOR', 'DIRECTOR_SERVICIO_MEDICO'):
+                    return Response(
+                        {'detail': 'Solo el Administrador o Director del Servicio Médico pueden cambiar el número de lote.'},
+                        status=status.HTTP_403_FORBIDDEN
+                    )
+                
+                # Validar duplicados para el nuevo nombre de lote (para el mismo medicamento)
+                cursor.execute(f"SELECT id_med_base FROM {esquema}.lotes WHERE id_lote = %s", [pk])
+                id_med_base = cursor.fetchone()[0]
+
+                cursor.execute(f"""
+                    SELECT 1 FROM {esquema}.lotes 
+                    WHERE numero_lote = %s AND id_med_base = %s AND id_lote != %s
+                """, [numero_lote.strip().upper(), id_med_base, pk])
+                if cursor.fetchone():
+                    return Response(
+                        {'detail': f'El lote {numero_lote.strip().upper()} ya existe para este medicamento.'},
+                        status=status.HTTP_409_CONFLICT
+                    )
+
+                lote_name_to_save = numero_lote.strip().upper()
+            else:
+                lote_name_to_save = old_lote_name
+
             cursor.execute(f"""
                 UPDATE {esquema}.lotes 
                 SET cantidad_actual = %s, 
                     fecha_vencimiento = %s,
+                    numero_lote = %s,
                     activo = TRUE
                 WHERE id_lote = %s
-            """, [cantidad, fecha_vencimiento, pk])
+            """, [cantidad, fecha_vencimiento, lote_name_to_save, pk])
             
-            detalle = f"Lote {lote[1]} editado ({esquema}): Cantidad {old_qty}->{cantidad}, Vencimiento {old_date}->{fecha_vencimiento}"
+            detalle = f"Lote {old_lote_name} editado ({esquema}): Cantidad {old_qty}->{cantidad}, Vencimiento {old_date}->{fecha_vencimiento}"
+            if lote_name_to_save != old_lote_name:
+                detalle += f", Número de Lote {old_lote_name}->{lote_name_to_save}"
+            
             log_inventario(request, "EDICION", pk, detalle)
             
         return Response({'message': 'Lote actualizado correctamente.'})

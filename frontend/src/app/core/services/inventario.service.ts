@@ -47,7 +47,11 @@ export class InventarioService {
     return this.http.get<{ id: number; nombre: string }[]>(`${this.API}/catalogos/presentaciones/`);
   }
 
-  editarLote(id_lote: number, data: { cantidad: number; fecha_vencimiento: string }, schema: string = 'farmacia'): Observable<any> {
+  editarLote(id_lote: number, data: { cantidad: number; fecha_vencimiento: string; numero_lote?: string }, schema: string = 'farmacia'): Observable<any> {
     return this.http.post(`${this.API}/inventario/${id_lote}/editar/?schema=${schema}`, data);
+  }
+
+  getSiguienteLote(schema: string = 'farmacia'): Observable<{ siguiente_lote: string }> {
+    return this.http.get<{ siguiente_lote: string }>(`${this.API}/dotacion/lotes/siguiente-numero/?schema=${schema}`);
   }
 }
