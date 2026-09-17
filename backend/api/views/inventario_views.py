@@ -35,11 +35,11 @@ class SemaforoInventarioView(APIView):
 
         from api.permissions import get_user_role
         role = get_user_role(request.user)
-        esquema = 'proveeduria' if role == 'PROVEEDURIA' else 'farmacia'
         target_schema = request.query_params.get('schema')
-        if role in ('ADMINISTRADOR', 'ENCARGADO') and target_schema:
-            if target_schema in ['farmacia', 'proveeduria']:
-                esquema = target_schema
+        if target_schema in ['farmacia', 'proveeduria']:
+            esquema = target_schema
+        else:
+            esquema = 'proveeduria' if role == 'PROVEEDURIA' else 'farmacia'
 
         where_clauses = ["activo = TRUE"]
         params = []
